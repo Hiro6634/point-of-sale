@@ -14,7 +14,7 @@ const config = {
   };
 
 
-  firebase.initializeApp(config);
+  var app = firebase.initializeApp(config);
   
 
   export const createUserProfileDocument = async (userAuth, additionalData) => {
@@ -45,7 +45,7 @@ const config = {
   }
 
 
-  export const auth = firebase.auth();
+  export const auth = firebase.auth(app);
   export const firestore = firebase.firestore();
   
   const provider = new firebase.auth.GoogleAuthProvider();
