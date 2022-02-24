@@ -52,6 +52,12 @@ class App extends React.Component {
               )
             } 
           />
+          <Redirect to={
+            this.props.currentUser ? (
+              '/SignIn'
+            ):(
+              '/'
+            )} />
         </Switch>
       </div>
     );

@@ -1,11 +1,12 @@
 import React from 'react';
 import { HomePageContainer } from './homepage.styles';
+import MenuBuilder from '../../components/menu-builder/menu-builder.component';
 
 const Homepage = () => {
     console.log("I'm in HomePage!");
     return(
     <HomePageContainer>
-        <h1>Selector</h1>
+        <MenuBuilder/>
         <h2>Resume</h2>
     </HomePageContainer>
 )}
