@@ -7,72 +7,20 @@ class MenuBuilder extends React.Component{
         super();
 
         this.state = {
-            categories: [
+            food: [
                 {
                     id: 1,
-                    name: 'nihonryori',
-                    color: '#fff888555',
-                    menu: [
-                        {
-                            name: 'UDON',
-                            price: '300',
-                            enable: 'true'
-                        },
-                        {
-                            name: 'YAKITORI X3',
-                            price: '150',
-                            enable: 'true'
-                        },
-                        {
-                            name: 'HARUMAKI X3',
-                            price: '130',
-                            enable: 'true'
-                        }
-                    ]
+                    name: 'UDON',
+                    price: 300,
+                    category: 'nihonryori',
+                    color: '#fff888555'
                 },
                 {
                     id: 2,
-                    name: 'parrilla',
-                    color: 'cyan',
-                    menu:  [
-                        {
-                            name: 'CHORIPAN',
-                            price: '150',
-                            enable: 'true'
-                        },
-                        {
-                            name: 'BONDIOLA',
-                            price: '180',
-                            enable: 'true'
-                        },
-                        {
-                            name: 'HAMBURGUESA',
-                            price: '150',
-                            enable: 'true'
-                        }
-                    ]
-                },
-                {
-                    id: 3,
-                    name: 'bebidas',
-                    color: 'yellow',
-                    menu: [
-                        {
-                            name: 'AGUA',
-                            price: '60',
-                            enable: 'true'
-                        },
-                        {
-                            name: 'SBORIZADA',
-                            price: '70',
-                            enable: 'true'
-                        },
-                        {
-                            name: 'CERVEZA',
-                            price: '100',
-                            enable: 'true'
-                        }
-                    ]
+                    name: 'YAKITORI X3',
+                    price: 180,
+                    category: 'nihonryori',
+                    color: '#fff888555'
                 }
             ]
         }
@@ -82,7 +30,7 @@ class MenuBuilder extends React.Component{
         return(
             <div className='menu-builder-container'>
                 {
-                    this.state.categories.map(({id, ...otherSectionProps}) => (
+                    this.state.food.map(({id, ...otherSectionProps}) => (
                         <MenuItem key={id} {...otherSectionProps} />
                     ))
                 }
