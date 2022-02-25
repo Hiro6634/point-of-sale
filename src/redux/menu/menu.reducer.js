@@ -1,3 +1,4 @@
+//import { MenuActionTypes } from './menu.types';
 
 /*const INITIAL_STATE = {
     categories:[
@@ -85,19 +86,24 @@
 }*/
 
 const INITIAL_STATE = {
-    food: [
+    foods: [
         {
             id: 1,
             name: 'UDON',
-            price: 300
+            price: 300,
+            category: 'nihonryori',
+            color: '#fff888555'
         },
         {
             id: 2,
             name: 'YAKITORI X3',
-            price: 180
+            price: 180,
+            category: 'nihonryori',
+            color: '#fff888555'
         }
     ]
 }
+
 const menuReducer = (state=INITIAL_STATE, action) => {
     console.log(state);
     switch(action.type){
@@ -105,5 +111,6 @@ const menuReducer = (state=INITIAL_STATE, action) => {
             return state;
     }
 }
+
 
 export default menuReducer;

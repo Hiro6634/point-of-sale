@@ -1,8 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 
 import {ReactComponent as Logo} from '../../assets/logo.svg'
 import { auth } from '../../firebase/firebase.utils';
+import { selectCurrentUser } from '../../redux/user/user.selectors';
 
 import { 
     HeaderContainer,
@@ -12,9 +14,6 @@ import {
  } from './header.styles';
 
 const Header = ({currentUser}) => {
-    console.log("Drawing Header");
-    console.log("currentuser:", currentUser);
-
     return(
         <HeaderContainer>
             <LogoContainer to='/'>
@@ -39,9 +38,12 @@ const Header = ({currentUser}) => {
     );
 }
 
-const mapStateToProps = state => ({
-    currentUser: state.user.currentUser
+const mapStateToProps = createStructuredSelector({
+    currentUser: selectCurrentUser
 });
 
-export default connect(mapStateToProps)(Header); 
+
+export default connect(
+    mapStateToProps
+    )(Header); 
 

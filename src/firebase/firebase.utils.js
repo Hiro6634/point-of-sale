@@ -44,7 +44,26 @@ const config = {
        return userRef;
   }
 
+  export const convertCollectionSnapshotToMap = collections => {
+    const transformedCollection = collections.docs.map(doc=>{
+        const {name, category, price, color, enable} = doc.data();
 
+        return {
+            id: doc.id,
+            name,
+            price,
+            category,
+            color,
+            enable
+        };
+    });
+
+    return transformedCollection.reduce((accumulator, collection)=>{
+        accumulator[collection.name.toLowerCase()] = collection;
+        return accumulator;
+    }, {});
+  }
+ 
   export const auth = firebase.auth(app);
   export const firestore = firebase.firestore();
   
