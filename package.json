@@ -2,11 +2,13 @@
   "name": "point-of-sale",
   "version": "0.1.0",
   "private": true,
+  "homepage":"https://Hiro6634.github.io/point-of-sale",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^13.5.0",
     "firebase": "^9.6.7",
+    "gh-pages": "^3.2.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.6",
@@ -23,7 +25,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy":"react-scripts build",
+    "deploy":"gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
