@@ -4,9 +4,9 @@ import { CartItemContainer } from './cart-itemstyles';
 
 const CartItem = ({item:{name, price, quantity}}) => (
     <CartItemContainer>
-        <span>{name}</span>
         <span>{quantity}</span>
-        <span>{price}</span>
+        <span>{name}</span>
+        <span>{price*quantity}</span>
     </CartItemContainer>
 );
 

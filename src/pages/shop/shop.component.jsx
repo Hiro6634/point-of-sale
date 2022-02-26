@@ -2,32 +2,28 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import ShopItem from '../../components/shop-item/shop-item.component';
-import CartDropdown from '../../components/cart-dropdown/cart-dropdown.component';
-import { selectCollections, selectCollectionsForPreview } from '../../redux/shop/shop.selectors';
+import Checkout from '../../components/checkout/checkout.component';
 
-const ShopPage = ({collections, mycols}) => {
-    console.log("COLLECTIONS", collections);
-    console.log("myCols",mycols);
-    mycols.map((item)=>{
-        console.log(item)
-    });
+import { selectCollectionsForPreview } from '../../redux/shop/shop.selectors';
+import { createStructuredSelector } from 'reselect';
+
+const ShopPage = ({collections}) => {
     return(
     <div>
         <h2>VENTAS</h2>
         <div>
             {
-                mycols.map((col)=>(
+                collections.map((col)=>(
                     <ShopItem item={col}/>                    
                 ))
             }
         </div>
-        <CartDropdown/>
+        <Checkout/>
     </div>
 )};
 
-const mapStateToProps = state => ({
-    collections: selectCollections(state),
-    mycols: selectCollectionsForPreview(state)
+const mapStateToProps = createStructuredSelector ({
+    collections: selectCollectionsForPreview
 });
 
 export default connect(mapStateToProps)(ShopPage);
