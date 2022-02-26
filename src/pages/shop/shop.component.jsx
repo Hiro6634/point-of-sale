@@ -13,7 +13,7 @@ const ShopPage = ({collections, mycols}) => {
     });
     return(
     <div>
-        <h2>ShopPage</h2>
+        <h2>VENTAS</h2>
         <div>
             {
                 mycols.map((col)=>(
