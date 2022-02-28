@@ -2,28 +2,50 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import ShopItem from '../../components/shop-item/shop-item.component';
-import Checkout from '../../components/checkout/checkout.component';
 
 import { selectCollectionsForPreview } from '../../redux/shop/shop.selectors';
 import { createStructuredSelector } from 'reselect';
 
-const ShopPage = ({collections}) => {
+import { 
+    ShopContainer, 
+    ShopHeaderContainer,
+    DescriptionContainer,
+    PriceContainer,
+    QuantityContainer,
+    DeleteContainer
+} from './shop.styles';
+
+const Shop = ({collections}) => {
+    console.log("COLLECTIONS", collections);
     return(
-    <div>
-        <h2>VENTAS</h2>
-        <div>
-            {
-                collections.map((col)=>(
-                    <ShopItem item={col}/>                    
-                ))
-            }
-        </div>
-        <Checkout/>
-    </div>
+    <ShopContainer>
+        <ShopHeaderContainer>
+            <DescriptionContainer>
+                Descripcion
+            </DescriptionContainer>
+            <PriceContainer>
+                Precio
+            </PriceContainer>
+            <QuantityContainer>
+                Cant.
+            </QuantityContainer>
+            <PriceContainer>
+                S.Total
+            </PriceContainer>
+            <DeleteContainer>
+                Borrar
+            </DeleteContainer>
+        </ShopHeaderContainer>
+        {
+            collections.map((col)=>(
+                <ShopItem item={col}/>                    
+            ))
+        }
+    </ShopContainer>
 )};
 
 const mapStateToProps = createStructuredSelector ({
     collections: selectCollectionsForPreview
 });
 
-export default connect(mapStateToProps)(ShopPage);
+export default connect(mapStateToProps)(Shop);

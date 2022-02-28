@@ -45,8 +45,11 @@ const config = {
   }
 
   export const convertCollectionSnapshotToMap = collections => {
+
+    console.log("COLLECTIONS_", collections);
+
     const transformedCollection = collections.docs.map(doc=>{
-        const {name, category, price, color, enable} = doc.data();
+        const {name, category, price, color, enable, quantity} = doc.data();
 
         return {
             id: doc.id,
@@ -54,7 +57,8 @@ const config = {
             price,
             category,
             color,
-            enable
+            enable,
+            quantity
         };
     });
 

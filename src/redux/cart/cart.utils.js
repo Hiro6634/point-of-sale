@@ -10,6 +10,7 @@ export const addItemsToCart = (cartItems, cartItemToAdd) => {
             : cartItem 
         )
     }
+    
     return [...cartItems, {...cartItemToAdd, quantity: 1}]
 };
 
@@ -30,3 +31,4 @@ export const removeItemsFromCart = (cartItems, cartItemToRemove) => {
     );
 };
 
+ 

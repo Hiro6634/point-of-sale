@@ -34,7 +34,7 @@ const Checkout = ({cartItems, total}) => (
             ))
         }
         <TotalContainer>TOTAL: ${total}</TotalContainer>
-    </CheckoutContainer>
+     </CheckoutContainer>
 
 ); 
 

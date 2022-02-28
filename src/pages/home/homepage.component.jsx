@@ -1,17 +1,18 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
 import { firestore } from '../../firebase/firebase.utils';
 import WithSpinner from '../../components/with-spinner/with-spinner.component';
 
-import ShopPage from '../shop/shop.component';
+import Shop from '../shop/shop.component';
+import Checkout from '../../components/checkout/checkout.component';
+
 import { convertCollectionSnapshotToMap } from '../../firebase/firebase.utils';
 import { updateCollections } from '../../redux/shop/shop.actions';
 import { connect } from 'react-redux';
 
 import { HomePageContainer } from './homepage.styles';
 
-const ShopPageWithSpinner = WithSpinner(ShopPage);
-
+const ShopWithSpinner = WithSpinner(Shop);
+const CheckoutWithSpinner = WithSpinner(Checkout);
 
 class Homepage extends React.Component {
 
@@ -24,28 +25,20 @@ class Homepage extends React.Component {
     componentDidMount(){
         const {updateCollections} = this.props;
         const collectionRef = firestore.collection('collections');
-        console.log("loading...");
 
-        collectionRef.onSnapshot( async snapshot => {
+        collectionRef.get().then(snapshot => {
             const collectionsMap = convertCollectionSnapshotToMap(snapshot);
             updateCollections(collectionsMap);
-            console.log("loaded...");
-            this.setState({loading: false});
+            this.setState({ loading: false});
         });
-    }    
-
+    }
     render(){
-        const { match } = this.props;
         const { loading } = this.state;
 
         return(
         <HomePageContainer>
-            <Route
-                exact path={`${match.path}`}
-                render={props => (
-                    <ShopPageWithSpinner isLoading={loading}{...props}/>
-                )}
-            />
+            <ShopWithSpinner isLoading={loading}/>
+            <CheckoutWithSpinner isLoading={loading}/>
         </HomePageContainer>
         )
     }

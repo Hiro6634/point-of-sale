@@ -32,3 +32,8 @@ export const selectCartTotal = createSelector(
         )
 );
 
+export const selectCartItemQuantity = createSelector(
+    [selectCartItems,
+    (state, findItem)=>findItem],
+    (cartItems,findItem) => cartItems.filter( cartItem=>cartItem.id === findItem.id)
+);
