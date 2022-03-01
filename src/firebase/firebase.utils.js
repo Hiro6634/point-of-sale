@@ -21,8 +21,6 @@ const config = {
     if( !userAuth) return;
 
         const userRef = firestore.doc(`users/${userAuth.uid}`);
-
-        console.log('userRef ', userRef);
         const snapShot = await userRef.get();
 
        if(!snapShot.exists){
@@ -45,11 +43,8 @@ const config = {
   }
 
   export const convertCollectionSnapshotToMap = collections => {
-
-    console.log("COLLECTIONS_", collections);
-
     const transformedCollection = collections.docs.map(doc=>{
-        const {name, category, price, color, enable, quantity} = doc.data();
+        const {name, category, price, color, enable} = doc.data();
 
         return {
             id: doc.id,
@@ -57,8 +52,7 @@ const config = {
             price,
             category,
             color,
-            enable,
-            quantity
+            enable
         };
     });
 

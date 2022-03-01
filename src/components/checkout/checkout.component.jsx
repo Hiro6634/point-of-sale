@@ -14,20 +14,6 @@ import {
 
 const Checkout = ({cartItems, total}) => (
     <CheckoutContainer>
-        <CheckoutHeaderContainer>
-            <HeaderBlockContainer>
-                <span>Cantidad</span>
-            </HeaderBlockContainer>
-            <HeaderBlockContainer>
-                <span>Producto</span>
-            </HeaderBlockContainer>
-            <HeaderBlockContainer>
-                <span>Precio</span>
-            </HeaderBlockContainer>
-            <HeaderBlockContainer>
-                <span>Borrar</span>
-            </HeaderBlockContainer>
-        </CheckoutHeaderContainer>
         {
             cartItems.map( cartItem => (
                 <CheckoutItem key={cartItem.id} cartItem={cartItem}/>

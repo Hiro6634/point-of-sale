@@ -31,4 +31,6 @@ export const removeItemsFromCart = (cartItems, cartItemToRemove) => {
     );
 };
 
- 
+export const getItemQuantity = ( cartItems, id) => {
+    return cartItems.find(cartItem=>cartItem.id===id);
+} 

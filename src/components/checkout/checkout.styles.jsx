@@ -1,12 +1,14 @@
 import styled from 'styled-components';
 
 export const CheckoutContainer = styled.div`
-    width: auto;
+    width: 75%;
     min-height: 90vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     margin: 50px auto 0;
+    border: 1px solid darkgrey;
+    padding: 5px;
     `;
 
 export const CheckoutHeaderContainer = styled.div`

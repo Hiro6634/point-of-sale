@@ -17,7 +17,6 @@ const CheckoutItem = ({ cartItem: cartItem, clearItem}) => {
             <TextContainer>{name}</TextContainer>
             <QuantityContainer>{quantity}</QuantityContainer>
             <TextContainer>${price}</TextContainer>
-            <RemoveButtonContainer onClick={()=>clearItem(cartItem)}>&#10005;</RemoveButtonContainer>
         </CheckoutItemContainer>
     );
 };

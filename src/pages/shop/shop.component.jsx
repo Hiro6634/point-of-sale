@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 
 import ShopItem from '../../components/shop-item/shop-item.component';
 
-import { selectCollectionsForPreview } from '../../redux/shop/shop.selectors';
-import { createStructuredSelector } from 'reselect';
+import { selectShopCollections } from '../../redux/shop/shop.selectors';
 
 import { 
     ShopContainer, 
@@ -16,7 +16,6 @@ import {
 } from './shop.styles';
 
 const Shop = ({collections}) => {
-    console.log("COLLECTIONS", collections);
     return(
     <ShopContainer>
         <ShopHeaderContainer>
@@ -37,15 +36,17 @@ const Shop = ({collections}) => {
             </DeleteContainer>
         </ShopHeaderContainer>
         {
-            collections.map((col)=>(
-                <ShopItem item={col}/>                    
+            collections !== null ? 
+                collections.map((col)=>(
+                <ShopItem key={col.id} item={col}/>                    
             ))
+            : null
         }
     </ShopContainer>
 )};
 
 const mapStateToProps = createStructuredSelector ({
-    collections: selectCollectionsForPreview
+    collections: selectShopCollections
 });
 
 export default connect(mapStateToProps)(Shop);
