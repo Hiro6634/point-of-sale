@@ -12,10 +12,9 @@ import {
 } from '../../pages/shop/shop.styles';
 import { createStructuredSelector } from 'reselect';
 import { selectCartItems } from '../../redux/cart/cart.selectors';
-import { incShopItem } from '../../redux/shop/shop.actions'; 
 import { getItemQuantity } from '../../redux/cart/cart.utils';
 
-const ShopItem = ({item, addItem, removeItem, clearItem, incShopItem,cartItems}) => {
+const ShopItem = ({item, addItem, clearItem, cartItems}) => {
     const {name, price} = item;
 
     const CItem = getItemQuantity(cartItems, item.id);
@@ -23,25 +22,19 @@ const ShopItem = ({item, addItem, removeItem, clearItem, incShopItem,cartItems})
 
     return(
     <ShopItemContainer>
-        <DescriptionContainer>
+        <DescriptionContainer onClick={()=>addItem(item)}>
             {name}
         </DescriptionContainer>
         <PriceContainer>
             ${price}
         </PriceContainer>
         <QuantityContainer>
-            <div onClick={()=>removeItem(item)}>&#10094;  </div>
-            <span>{quantity}</span>
-            <div onClick={()=>{
-                incShopItem(item.id); 
-                addItem(item);
-                }}
-            >&#10095;</div>
+            {quantity}
         </QuantityContainer>
         <PriceContainer>
             ${price*quantity}
         </PriceContainer>        
-        <DeleteContainer onClick={()=>clearItemFromCart(item)}>
+        <DeleteContainer onClick={()=>clearItem(item)}>
             &#10005;
         </DeleteContainer>
     </ShopItemContainer>
