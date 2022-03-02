@@ -25,7 +25,9 @@ class SignIn extends React.Component{
         const {email, password} = this.state;
 
         try{
+            console.log("AWAITING Res...");
             await auth.signInWithEmailAndPassword( email, password);
+            console.log("Clear EditText");
             this.setState({email: '', password: ''})
         }
         catch( error){

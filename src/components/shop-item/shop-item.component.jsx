@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { addItem,removeItem,clearItem, clearItemFromCart } from '../../redux/cart/cart.actions';
-import { selectCartQuantity } from '../../redux/cart/cart.selectors';
+import { addItem,removeItem, clearItemFromCart } from '../../redux/cart/cart.actions';
 import { ShopItemContainer } from './shop-item.styles';
 
 import { 
@@ -21,7 +20,6 @@ const ShopItem = ({item, addItem, removeItem, clearItem, incShopItem,cartItems})
 
     const CItem = getItemQuantity(cartItems, item.id);
     const quantity = CItem?CItem.quantity:0;
-    console.log("QTY:",CItem?CItem.quantity:0);
 
     return(
     <ShopItemContainer>
@@ -43,7 +41,7 @@ const ShopItem = ({item, addItem, removeItem, clearItem, incShopItem,cartItems})
         <PriceContainer>
             ${price*quantity}
         </PriceContainer>        
-        <DeleteContainer onClick={()=>clearItem(item)}>
+        <DeleteContainer onClick={()=>clearItemFromCart(item)}>
             &#10005;
         </DeleteContainer>
     </ShopItemContainer>
@@ -52,9 +50,7 @@ const ShopItem = ({item, addItem, removeItem, clearItem, incShopItem,cartItems})
 const mapDispatchToProps = dispatch => ({
     addItem: (item) => dispatch(addItem(item)),
     removeItem: (item) => dispatch(removeItem(item)),
-    clearItem: (item) => dispatch(clearItemFromCart(item)),
-    incShopItem: (item) => dispatch(incShopItem(item)),
-    getCartItemQuantity: (item) => dispatch(selectCartQuantity(item))
+    clearItem: (item) => dispatch(clearItemFromCart(item))
 });
 
 const mapStateToProps = createStructuredSelector({

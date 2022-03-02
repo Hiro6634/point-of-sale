@@ -9,7 +9,7 @@ import { selectCurrentUser } from '../../redux/user/user.selectors';
 import { 
     HeaderContainer,
     LogoContainer,
-    OptinosContainer,
+    OptionsContainer,
     OptionLink
  } from './header.styles';
 
@@ -19,21 +19,21 @@ const Header = ({currentUser}) => {
             <LogoContainer to='/'>
                 <Logo className='logo'/>
             </LogoContainer>
-            <OptinosContainer>
+            <OptionsContainer>
                 <OptionLink to='/config'>
-                    CONFIG
+                    CONF
                 </OptionLink>
                 {
                     currentUser ?
                         <OptionLink as='div' onClick={() => auth.signOut()}>
-                            SIGN OUT
+                            SALIR
                         </OptionLink>
                         :
                         <OptionLink to='/signin'>
-                            SIGN IN
+                            INGRESAR
                         </OptionLink>
                 }
-            </OptinosContainer>
+            </OptionsContainer>
         </HeaderContainer>
     );
 }
