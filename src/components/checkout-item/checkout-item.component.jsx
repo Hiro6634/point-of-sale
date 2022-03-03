@@ -14,9 +14,9 @@ const CheckoutItem = ({ cartItem: cartItem, clearItem}) => {
     const { name, price, quantity} = cartItem;
     return(
         <CheckoutItemContainer>
-            <TextContainer>{name}</TextContainer>
             <QuantityContainer>{quantity}</QuantityContainer>
-            <TextContainer>${price}</TextContainer>
+            <TextContainer>{name}</TextContainer>
+            <TextContainer>${price*quantity}</TextContainer>
         </CheckoutItemContainer>
     );
 };

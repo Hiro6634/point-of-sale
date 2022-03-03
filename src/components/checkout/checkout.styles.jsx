@@ -7,10 +7,16 @@ export const CheckoutContainer = styled.div`
     flex-direction: column;
     align-items: center;
     margin: 50px auto 0;
-    border: 1px solid darkgrey;
     padding: 5px;
     `;
 
+export const CheckoutTicketContainer = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid darkgrey;
+    padding: 10px;
+`;
 export const CheckoutHeaderContainer = styled.div`
     width: auto;
     padding: 10px 0;
