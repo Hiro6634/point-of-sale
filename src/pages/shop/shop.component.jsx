@@ -20,7 +20,7 @@ const Shop = ({collections}) => {
     <ShopContainer>
         <ShopHeaderContainer>
             <DescriptionContainer>
-                Descripcion
+                Descripción
             </DescriptionContainer>
             <PriceContainer>
                 Precio

@@ -10,6 +10,10 @@ import {
     QuantityContainer,
     DeleteContainer
 } from '../../pages/shop/shop.styles';
+import { ShopItemDeleteContainer } from './shop-item.styles';
+
+//import { ReactComponent as TarshIcon} from '../../assets/trash-outline.svg';
+
 import { createStructuredSelector } from 'reselect';
 import { selectCartItems } from '../../redux/cart/cart.selectors';
 import { getItemQuantity } from '../../redux/cart/cart.utils';
@@ -36,7 +40,10 @@ const ShopItem = ({item, addItem, clearItem, cartItems}) => {
         </PriceContainer>        
         <DeleteContainer onClick={()=>clearItem(item)}>
             &#10005;
-        </DeleteContainer>
+{/*             <ShopItemDeleteContainer>
+                <TarshIcon/>
+            </ShopItemDeleteContainer>
+ */}        </DeleteContainer>
     </ShopItemContainer>
 )}; 
 
