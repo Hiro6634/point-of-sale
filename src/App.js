@@ -11,7 +11,7 @@ import { setCurrentUser } from './redux/user/user.actions';
 import './App.css';
 import { createStructuredSelector } from 'reselect';
 import { selectCurrentUser } from './redux/user/user.selectors';
-
+import ConfigPage from './pages/config/configpage.component';
 
 class App extends React.Component {
 
@@ -58,6 +58,13 @@ class App extends React.Component {
               )
             }
           />
+          {
+            currentUser ? (
+              <Route path='/config' component={ConfigPage}/>
+            ):(
+              null
+            )
+          }
           <Route 
             exact
             path = '/SignIn' 

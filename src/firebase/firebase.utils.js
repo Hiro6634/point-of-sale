@@ -21,7 +21,8 @@ const config = {
     if( !userAuth) return;
 
         const userRef = firestore.doc(`users/${userAuth.uid}`);
-        const snapShot = await userRef.get();
+        const snapShot = await userRef.get();       
+        const printer = '';
 
        if(!snapShot.exists){
            const {displayName, email} = userAuth;
@@ -31,6 +32,7 @@ const config = {
                await userRef.set({
                    displayName,
                    email,
+                   printer,
                    createAt,
                    ...additionalData
                })

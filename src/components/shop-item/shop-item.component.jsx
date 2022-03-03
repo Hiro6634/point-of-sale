@@ -10,7 +10,7 @@ import {
     QuantityContainer,
     DeleteContainer
 } from '../../pages/shop/shop.styles';
-import { ShopItemDeleteContainer } from './shop-item.styles';
+//import { ShopItemDeleteContainer } from './shop-item.styles';
 
 //import { ReactComponent as TarshIcon} from '../../assets/trash-outline.svg';
 
@@ -29,7 +29,7 @@ const ShopItem = ({item, addItem, clearItem, cartItems}) => {
         <DescriptionContainer onClick={()=>addItem(item)}>
             {name}
         </DescriptionContainer>
-        <PriceContainer>
+        <PriceContainer onClick={()=>addItem(item)}>
             ${price}
         </PriceContainer>
         <QuantityContainer>
