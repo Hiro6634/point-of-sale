@@ -7,3 +7,7 @@ export const ShopItemContainer = styled.div`
     cursor: pointer;
    
 `;
+
+export const ShopItemDeleteContainer = styled.div`
+    width: 20px;
+`;

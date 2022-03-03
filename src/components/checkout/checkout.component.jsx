@@ -12,10 +12,14 @@ import {
     HeaderBlockContainer,
     TotalContainer
  } from './checkout.styles';
+import { clearAllItemsFromCart } from '../../redux/cart/cart.actions';
 
-const Checkout = ({cartItems, total}) => (
+const Checkout = ({cartItems, total, clearAllItems}) => (
     <CheckoutContainer>
         <CheckoutTicketContainer>
+            <CheckoutHeaderContainer>
+                TICKET
+            </CheckoutHeaderContainer>
             {
                 cartItems.map( cartItem => (
                     <CheckoutItem key={cartItem.id} cartItem={cartItem}/>
@@ -23,14 +27,17 @@ const Checkout = ({cartItems, total}) => (
             }
             <TotalContainer>TOTAL: ${total}</TotalContainer>
         </CheckoutTicketContainer>
-        <CustomButton>IMPRIMIR</CustomButton>
+        <CustomButton onClick={() => clearAllItems()}>IMPRIMIR</CustomButton>
      </CheckoutContainer>
 
 ); 
 
+const mapDispatchToProps = dispatch => ({
+    clearAllItems: () => dispatch(clearAllItemsFromCart())
+})
 const mapStateToProps = createStructuredSelector({
     cartItems: selectCartItems,
     total: selectCartTotal
 });
 
-export default connect(mapStateToProps)(Checkout);
+export default connect(mapStateToProps, mapDispatchToProps)(Checkout);
