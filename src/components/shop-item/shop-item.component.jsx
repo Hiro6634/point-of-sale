@@ -2,10 +2,15 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { addItem,removeItem, clearItemFromCart } from '../../redux/cart/cart.actions';
-import { ShopItemContainer } from './shop-item.styles';
+import { 
+    ShopItemContainer, 
+    ShopItemDescriptionContainerCy,
+    ShopItemDescriptionContainerYl,
+    ShopItemDescriptionContainerPk,
+    ShopItemDescriptionContainer
+} from './shop-item.styles';
 
 import { 
-    DescriptionContainer,
     PriceContainer,
     QuantityContainer,
     DeleteContainer
@@ -24,11 +29,32 @@ const ShopItem = ({item, addItem, clearItem, cartItems}) => {
     const CItem = getItemQuantity(cartItems, item.id);
     const quantity = CItem?CItem.quantity:0;
 
+    console.log("COLOR: " + item.color.toUpperCase());
     return(
     <ShopItemContainer>
-        <DescriptionContainer onClick={()=>addItem(item)}>
-            {name}
-        </DescriptionContainer>
+        { 
+            item.color.toLowerCase() === "yellow" ? (
+                    <ShopItemDescriptionContainerYl onClick={()=>addItem(item)}>
+                        {name}
+                    </ShopItemDescriptionContainerYl>
+            ):(
+                item.color.toLowerCase() === "cyan" ? (
+                    <ShopItemDescriptionContainerCy onClick={()=>addItem(item)}>
+                        {name}
+                    </ShopItemDescriptionContainerCy>
+                ):(
+                    item.color.toLowerCase() === "pink" ? (
+                        <ShopItemDescriptionContainerPk onClick={()=>addItem(item)}>
+                            {name}
+                        </ShopItemDescriptionContainerPk>
+                    ):(
+                    <ShopItemDescriptionContainer onClick={()=>addItem(item)}>
+                        {name}
+                    </ShopItemDescriptionContainer>
+                    )
+                )
+            )
+        }
         <PriceContainer onClick={()=>addItem(item)}>
             ${price}
         </PriceContainer>

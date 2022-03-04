@@ -4,17 +4,16 @@ import { createStructuredSelector } from 'reselect';
 import { selectCartItems, selectCartTotal } from '../../redux/cart/cart.selectors';
 import CustomButton from '../custom-button/custom-button.component';
 import CheckoutItem from '../checkout-item/checkout-item.component';
-
+import { withRouter } from 'react-router-dom';
 import { 
     CheckoutContainer,
     CheckoutHeaderContainer,
     CheckoutTicketContainer,
-    HeaderBlockContainer,
     TotalContainer
  } from './checkout.styles';
 import { clearAllItemsFromCart } from '../../redux/cart/cart.actions';
 
-const Checkout = ({cartItems, total, clearAllItems}) => (
+const Checkout = ({cartItems, total, history, clearAllItems}) => (
     <CheckoutContainer>
         <CheckoutTicketContainer>
             <CheckoutHeaderContainer>
@@ -27,7 +26,7 @@ const Checkout = ({cartItems, total, clearAllItems}) => (
             }
             <TotalContainer>TOTAL: ${total}</TotalContainer>
         </CheckoutTicketContainer>
-        <CustomButton onClick={() => clearAllItems()}>IMPRIMIR</CustomButton>
+        <CustomButton onClick={()=>history.push('/confirm')}>IMPRIMIR</CustomButton>
      </CheckoutContainer>
 
 ); 
@@ -40,4 +39,4 @@ const mapStateToProps = createStructuredSelector({
     total: selectCartTotal
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Checkout);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Checkout));

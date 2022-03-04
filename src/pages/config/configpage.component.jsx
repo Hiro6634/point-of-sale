@@ -14,6 +14,7 @@ const ConfigPage = ({currentUSer}) => {
         <p>{currentUSer.displayName}</p>
         <p>{currentUSer.email}</p>
         <p>{currentUSer.printer}</p>
+        <p>{currentUSer.type}</p>
 {/*         <FormInput
             name="email"
             type="email"

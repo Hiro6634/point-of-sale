@@ -36,6 +36,7 @@ export const PriceContainer = styled.span`
 export const QuantityContainer = styled.span`
     display: flex;
     text-transform: capitalize;
+    align-items: center;
     width: 20%;
 `;
 

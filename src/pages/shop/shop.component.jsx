@@ -3,8 +3,11 @@ import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 
 import ShopItem from '../../components/shop-item/shop-item.component';
+import ShopCategory from '../../components/shop-category/shop-category.component';
 
-import { selectShopCollections } from '../../redux/shop/shop.selectors';
+import { selectCategoryMap } from '../../redux/category/category.selectors';
+
+import { selectCollections, selectShopCollectionsSortByCategory } from '../../redux/shop/shop.selectors';
 
 import { 
     ShopContainer, 
@@ -15,7 +18,8 @@ import {
     DeleteContainer
 } from './shop.styles';
 
-const Shop = ({collections}) => {
+const Shop = ({collections, categories}) => {
+    console.log("COLLECTIONS", collections);
     return(
     <ShopContainer>
         <ShopHeaderContainer>
@@ -42,11 +46,24 @@ const Shop = ({collections}) => {
             ))
             : null
         }
+        {/*
+            categories !== null ?
+                categories.map(category=>(
+                    <ShopCategory key={category.id} category={category}/>
+                )) 
+                : null
+        */}
     </ShopContainer>
 )};
 
-const mapStateToProps = createStructuredSelector ({
-    collections: selectShopCollections
+/*const mapStateToProps = createStructuredSelector ({
+    collections: selectShopCollections,
+    categories: selectCategoryMap
+});
+*/
+const mapStateToProps = (state) => ({
+    collections: selectShopCollectionsSortByCategory(state),
+    categories: selectCategoryMap(state)
 });
 
 export default connect(mapStateToProps)(Shop);

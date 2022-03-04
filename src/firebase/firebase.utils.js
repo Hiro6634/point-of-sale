@@ -63,7 +63,23 @@ const config = {
         return accumulator;
     }, {});
   }
- 
+  export const convertCategorySnapshotToMap = categories => {
+    const transformedCategories = categories.docs.map(doc=>{
+        const {order, name} = doc.data();
+
+        return{
+            id: doc.id,
+            order,
+            name
+        };
+    });   
+    
+    return transformedCategories.reduce((accumulator, category)=>{
+        accumulator[category.name.toLowerCase()] = category;
+        return accumulator;
+    },{});
+  }
+
   export const auth = firebase.auth(app);
   export const firestore = firebase.firestore();
   

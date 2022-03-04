@@ -11,7 +11,9 @@ import { setCurrentUser } from './redux/user/user.actions';
 import './App.css';
 import { createStructuredSelector } from 'reselect';
 import { selectCurrentUser } from './redux/user/user.selectors';
+
 import ConfigPage from './pages/config/configpage.component';
+import ConfirmPage from './pages/confirm/confirm.component';
 
 class App extends React.Component {
 
@@ -23,10 +25,7 @@ class App extends React.Component {
     this.unsubscribeFromAuth = auth.onAuthStateChanged( async userAuth => {
       if( userAuth) {
         const userRef = await createUserProfileDocument( userAuth);
-
-        console.log("USERREF:", userRef);
         userRef.onSnapshot( snapShot => {
-          console.log("ONSNAPSHOT:", snapShot.data());
           setCurrentUser({
             id: snapShot.id,
             ...snapShot.data()
@@ -65,6 +64,7 @@ class App extends React.Component {
               null
             )
           }
+          <Route exact path='/confirm' component={ConfirmPage}/>
           <Route 
             exact
             path = '/SignIn' 
