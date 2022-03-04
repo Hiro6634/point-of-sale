@@ -7,3 +7,4 @@ export const HomePageContainer = styled.div`
     align-items: center;
     padding: 5px 20px;
 `;
+

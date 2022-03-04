@@ -22,6 +22,9 @@ const Header = ({currentUser}) => {
                 <LogoImgContainer src={logo} alt="logo"/>
             </LogoContainer>
             <OptionsContainer>
+                <OptionLink to='/help'>
+                    AYUDA
+                </OptionLink>
                 <OptionLink to='/config'>
                     CONF
                 </OptionLink>

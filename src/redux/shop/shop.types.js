@@ -1,6 +1,5 @@
 const ShopActionTypes = {
-    UPDATE_COLLECTIONS: 'UPDATE_COLLECTIONS',
-    INC_SHOP_ITEM: 'INC_SHOP_ITEM'
+    UPDATE_COLLECTIONS: 'UPDATE_COLLECTIONS'
 };
 
 export default ShopActionTypes;

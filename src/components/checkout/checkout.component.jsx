@@ -3,30 +3,25 @@ import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { selectCartItems, selectCartTotal } from '../../redux/cart/cart.selectors';
 import CustomButton from '../custom-button/custom-button.component';
-import CheckoutItem from '../checkout-item/checkout-item.component';
+import Ticket from '../ticket/ticket.component';
+
 import { withRouter } from 'react-router-dom';
 import { 
     CheckoutContainer,
-    CheckoutHeaderContainer,
-    CheckoutTicketContainer,
-    TotalContainer
+    CheckoutTitleContainer,
+    CheckoutButtonsContainer
  } from './checkout.styles';
-import { clearAllItemsFromCart } from '../../redux/cart/cart.actions';
+
+ import { clearAllItemsFromCart } from '../../redux/cart/cart.actions';
 
 const Checkout = ({cartItems, total, history, clearAllItems}) => (
     <CheckoutContainer>
-        <CheckoutTicketContainer>
-            <CheckoutHeaderContainer>
-                TICKET
-            </CheckoutHeaderContainer>
-            {
-                cartItems.map( cartItem => (
-                    <CheckoutItem key={cartItem.id} cartItem={cartItem}/>
-                ))
-            }
-            <TotalContainer>TOTAL: ${total}</TotalContainer>
-        </CheckoutTicketContainer>
-        <CustomButton onClick={()=>history.push('/confirm')}>IMPRIMIR</CustomButton>
+        <CheckoutTitleContainer>TICKET</CheckoutTitleContainer>
+        <Ticket/>
+        <CheckoutButtonsContainer>
+            <CustomButton onClick={()=>history.push('/confirm')}>IMPRIMIR</CustomButton>
+            <CustomButton isGoogleSignIn onClick={()=>clearAllItems()}>CANCELAR</CustomButton>
+        </CheckoutButtonsContainer>        
      </CheckoutContainer>
 
 ); 

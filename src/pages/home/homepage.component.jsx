@@ -9,8 +9,12 @@ import { convertCollectionSnapshotToMap } from '../../firebase/firebase.utils';
 import { updateCollections } from '../../redux/shop/shop.actions';
 import { connect } from 'react-redux';
 
-import { HomePageContainer } from './homepage.styles';
+import { 
+    HomePageContainer 
+} from './homepage.styles';
 import { updateCategories } from '../../redux/category/category.actions';
+import { createStructuredSelector } from 'reselect';
+import { selectCartTotal } from '../../redux/cart/cart.selectors';
 
 const ShopWithSpinner = WithSpinner(Shop);
 const CheckoutWithSpinner = WithSpinner(Checkout);
@@ -49,7 +53,7 @@ class Homepage extends React.Component {
 
         categoriesRef.get().then(snapshot => {
             const categoriesMap = convertCategorySnapshotToMap(snapshot);
-            console.log("UPDATE_CATEGORIES", categoriesMap);
+
             updateCategories(categoriesMap);
             this.setState({
                 ...this.state,
@@ -67,11 +71,18 @@ class Homepage extends React.Component {
     }
     render(){
         const { loading } = this.state;
+        const {total} = this.props;
 
+        console.log("RENDER Total:"+ total);
         return(
         <HomePageContainer>
+            
             <ShopWithSpinner isLoading={loading}/>
-            <CheckoutWithSpinner isLoading={loading}/>
+            {
+                total > 0 ? (
+                    <CheckoutWithSpinner isLoading={loading}/>
+                ):null
+            }
         </HomePageContainer>
         )
     }
@@ -82,4 +93,8 @@ const mapDispatchToProps = dispatch => ({
     updateCategories: categoriesMap => dispatch(updateCategories(categoriesMap))
 });
 
-export default connect(null, mapDispatchToProps)(Homepage);
+const mapStateToProps = createStructuredSelector({
+    total: selectCartTotal
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Homepage);

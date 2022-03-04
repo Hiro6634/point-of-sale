@@ -7,17 +7,11 @@ import {
     ShopItemDescriptionContainerCy,
     ShopItemDescriptionContainerYl,
     ShopItemDescriptionContainerPk,
-    ShopItemDescriptionContainer
+    ShopItemDescriptionContainer,
+    ShopItemPriceContainer,
+    ShopItemQuantityContainer,
+    ShopItemDeleteContainer
 } from './shop-item.styles';
-
-import { 
-    PriceContainer,
-    QuantityContainer,
-    DeleteContainer
-} from '../../pages/shop/shop.styles';
-//import { ShopItemDeleteContainer } from './shop-item.styles';
-
-//import { ReactComponent as TarshIcon} from '../../assets/trash-outline.svg';
 
 import { createStructuredSelector } from 'reselect';
 import { selectCartItems } from '../../redux/cart/cart.selectors';
@@ -29,7 +23,6 @@ const ShopItem = ({item, addItem, clearItem, cartItems}) => {
     const CItem = getItemQuantity(cartItems, item.id);
     const quantity = CItem?CItem.quantity:0;
 
-    console.log("COLOR: " + item.color.toUpperCase());
     return(
     <ShopItemContainer>
         { 
@@ -55,21 +48,23 @@ const ShopItem = ({item, addItem, clearItem, cartItems}) => {
                 )
             )
         }
-        <PriceContainer onClick={()=>addItem(item)}>
+        <ShopItemPriceContainer onClick={()=>addItem(item)}>
             ${price}
-        </PriceContainer>
-        <QuantityContainer>
+        </ShopItemPriceContainer>
+        <ShopItemQuantityContainer>
             {quantity}
-        </QuantityContainer>
-        <PriceContainer>
+        </ShopItemQuantityContainer>
+        <ShopItemPriceContainer>
             ${price*quantity}
-        </PriceContainer>        
-        <DeleteContainer onClick={()=>clearItem(item)}>
+        </ShopItemPriceContainer>        
+        <ShopItemDeleteContainer onClick={()=>clearItem(item)}>&#10005;</ShopItemDeleteContainer>
+{/*        <DeleteContainer onClick={()=>clearItem(item)}>
             &#10005;
-{/*             <ShopItemDeleteContainer>
+             <ShopItemDeleteContainer>
                 <TarshIcon/>
             </ShopItemDeleteContainer>
- */}        </DeleteContainer>
+         </DeleteContainer>
+*/}
     </ShopItemContainer>
 )}; 
 

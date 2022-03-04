@@ -4,23 +4,36 @@ import { withRouter } from 'react-router-dom';
 import Ticket from '../../components/ticket/ticket.component';
 import { clearAllItemsFromCart } from '../../redux/cart/cart.actions';
 
-import { ConfirmPageContainer } from './confirm.styles';
+import { 
+    ConfirmPageContainer,
+    ConfirmTitleContainer,
+    ConfirmButtonsContainer,
+    ConfirmButton
+} from './confirm.styles';
 
 const ConfirmPage = ({clearAllItems, history}) => (
     <ConfirmPageContainer>
-        <h2>VENTA DE VALES</h2>
+        <ConfirmTitleContainer>VENTA DE VALES</ConfirmTitleContainer>
         <Ticket/>
-        <div>
-            <button onClick={()=>{
+        <ConfirmButtonsContainer>
+            <ConfirmButton onClick={()=>{
                 clearAllItems();
                 history.push('/');
-            }}>IMPRIMIR</button>
-            <button onClick={()=>history.push('/')}>EDITAR</button>
-            <button onClick={()=>{
+            }}>
+                IMPRIMIR
+            </ConfirmButton>
+            <ConfirmButton 
+                onClick={()=>history.push('/')
+            }>
+                EDITAR
+            </ConfirmButton>
+            <ConfirmButton 
+                onClick={()=>{
                 clearAllItems();
                 history.push('/');
-            }}>CANCELAR</button>
-        </div>
+            }}>CANCELAR
+            </ConfirmButton>
+        </ConfirmButtonsContainer>
     </ConfirmPageContainer>
 );
 

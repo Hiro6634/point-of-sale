@@ -5,7 +5,3 @@ export const updateCollections = (collectionsMap) => ({
     payload: collectionsMap
 });
 
-export const incShopItem = (id) => ({
-    type: ShopActionTypes.INC_SHOP_ITEM,
-    payload: id
-});
