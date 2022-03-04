@@ -25,9 +25,7 @@ class SignIn extends React.Component{
         const {email, password} = this.state;
 
         try{
-            console.log("AWAITING Res...");
             await auth.signInWithEmailAndPassword( email, password);
-            console.log("Clear EditText");
             this.setState({email: '', password: ''})
         }
         catch( error){
@@ -44,8 +42,7 @@ class SignIn extends React.Component{
     render(){
         return(
             <SignInContainer>
-                <SignInTitle>I already have an account</SignInTitle>
-                <span>Sign in with your email anda password</span>
+                <SignInTitle>Ingrese su email y password</SignInTitle>
                 <form onSubmit={this.handleSubmit}>
                     <FormInput  
                         name="email" 
