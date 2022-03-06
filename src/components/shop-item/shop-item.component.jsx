@@ -16,27 +16,29 @@ import {
 import { createStructuredSelector } from 'reselect';
 import { selectCartItems } from '../../redux/cart/cart.selectors';
 import { getItemQuantity } from '../../redux/cart/cart.utils';
+import { selectCategories, selectCategoryMap } from '../../redux/category/category.selectors';
+import { getCategoryByName } from '../../redux/category/category.utils';
 
-const ShopItem = ({item, addItem, clearItem, cartItems}) => {
+const ShopItem = ({item, addItem, clearItem, cartItems,  categoriesMap}) => {
     const {name, price} = item;
 
     const CItem = getItemQuantity(cartItems, item.id);
     const quantity = CItem?CItem.quantity:0;
-
+    const color = getCategoryByName(categoriesMap, item.category).color.toLowerCase();  
     return(
     <ShopItemContainer>
         { 
-            item.color.toLowerCase() === "yellow" ? (
+            color === "yellow" ? (
                     <ShopItemDescriptionContainerYl onClick={()=>addItem(item)}>
                         {name}
                     </ShopItemDescriptionContainerYl>
             ):(
-                item.color.toLowerCase() === "cyan" ? (
+                color === "cyan" ? (
                     <ShopItemDescriptionContainerCy onClick={()=>addItem(item)}>
                         {name}
                     </ShopItemDescriptionContainerCy>
                 ):(
-                    item.color.toLowerCase() === "pink" ? (
+                    color === "pink" ? (
                         <ShopItemDescriptionContainerPk onClick={()=>addItem(item)}>
                             {name}
                         </ShopItemDescriptionContainerPk>
@@ -75,7 +77,9 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = createStructuredSelector({
-    cartItems: selectCartItems
+    cartItems: selectCartItems,
+    categories: selectCategories,
+    categoriesMap: selectCategoryMap
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ShopItem);

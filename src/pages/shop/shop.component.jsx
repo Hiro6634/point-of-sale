@@ -4,7 +4,7 @@ import { createStructuredSelector } from 'reselect';
 
 import ShopItem from '../../components/shop-item/shop-item.component';
 
-import { selectCategoryMap } from '../../redux/category/category.selectors';
+//import { selectCategoryMap } from '../../redux/category/category.selectors';
 
 import {  selectShopCollectionsSortByCategory } from '../../redux/shop/shop.selectors';
 

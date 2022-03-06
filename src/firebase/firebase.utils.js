@@ -44,6 +44,18 @@ const config = {
        return userRef;
   }
 
+  export const printTicket = async (printer, ticket) => {
+    const ticketId = new Date().getTime();
+    const queueRef = firestore.doc(`printers/${printer}/queue/${ticketId}`);
+    try{
+        await queueRef.set(
+            ticket
+        );
+    } catch(error){
+        console.error(error);     
+    }
+}
+
   export const convertCollectionSnapshotToMap = collections => {
     const transformedCollection = collections.docs.map(doc=>{
         const {name, category, price, color, enable} = doc.data();
@@ -65,12 +77,13 @@ const config = {
   }
   export const convertCategorySnapshotToMap = categories => {
     const transformedCategories = categories.docs.map(doc=>{
-        const {order, name} = doc.data();
+        const {order, name, color} = doc.data();
 
         return{
             id: doc.id,
             order,
-            name
+            name,
+            color
         };
     });   
     

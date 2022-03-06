@@ -73,7 +73,6 @@ class Homepage extends React.Component {
         const { loading } = this.state;
         const {total} = this.props;
 
-        console.log("RENDER Total:"+ total);
         return(
         <HomePageContainer>
             
