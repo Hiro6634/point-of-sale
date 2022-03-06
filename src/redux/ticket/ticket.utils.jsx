@@ -1,24 +1,31 @@
-   export const buildTicket = (items, total) => {
+   export const buildTicket = (user, items, total) => {
 
+    //console.log("userEmail:"+user.email );
+    //console.log("userDisplayName:"+user.displayName );
+    //console.log("Total:"+total );
+    //console.log("Items:",items );
+    const printAt = new Date();
     let ticketItems = [];
-    items.forEach(function(value,key) {
-        console.log("KEY["+key+"]",value)
-        ticketItems[key]=value;    
-    }); 
-
-/*    items.map((ticketItems, item)=>({
-        ...ticketItems, 
-        const it = {
+    items.map(item=>(
+        ticketItems.push ({
             description: item.name,
-            price: item.price * item.quantity,
+            price: item.price,
+            subtotal: item.price * item.quantity,
             quantity: item.quantity,
             category: item.category 
-        }
-    }));    */
+        })
+    ));
+
     const  ticket = {
+        user: {
+            email: user.email,
+            displayName: user.displayName
+        },
         total: total,
-        items: ticketItems
+        items: ticketItems,
+        printAt: printAt
     }
-    
+
+    //console.log("TICKET:", ticket);
     return  ticket;
 }

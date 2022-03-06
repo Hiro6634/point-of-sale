@@ -22,9 +22,10 @@ class ConfirmPage extends React.Component{
     handlePrint =  async () => {
         const { currentUser, cartItems, total } = this.props;
     
-        await printTicket(currentUser.printer, buildTicket(cartItems, total));
+        //console.log("CURRENTUSER:", currentUser);
+        await printTicket(currentUser.printer, buildTicket(currentUser, cartItems, total));
 
-        console.log("Bye");
+        //console.log("Bye");
         this.clearAndHome();
     }
 
