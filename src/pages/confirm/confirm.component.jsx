@@ -17,11 +17,18 @@ import { selectCartItems, selectCartTotal } from '../../redux/cart/cart.selector
 import { buildTicket } from '../../redux/ticket/ticket.utils';
 
 class ConfirmPage extends React.Component{
-
+    state = {
+        disabled: false
+    };
 
     handlePrint =  async () => {
         const { currentUser, cartItems, total } = this.props;
-    
+        
+        this.setState({
+            ...this.state,
+            disabled: true
+        });
+
         //console.log("CURRENTUSER:", currentUser);
         await printTicket(currentUser.printer, buildTicket(currentUser, cartItems, total));
 
@@ -43,7 +50,7 @@ class ConfirmPage extends React.Component{
                 <ConfirmTitleContainer>VENTA DE VALES</ConfirmTitleContainer>
                 <Ticket/>
                 <ConfirmButtonsContainer>
-                    <ConfirmButton  type='button' onClick={()=>this.handlePrint()}>
+                    <ConfirmButton disabled={this.state.disabled} type='button' onClick={()=>this.handlePrint()}>
                         IMPRIMIR
                     </ConfirmButton>
                     <ConfirmButton type='button'
