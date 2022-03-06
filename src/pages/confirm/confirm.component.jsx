@@ -16,19 +16,26 @@ import { selectCurrentUser } from '../../redux/user/user.selectors';
 import { selectCartItems, selectCartTotal } from '../../redux/cart/cart.selectors';
 import { buildTicket } from '../../redux/ticket/ticket.utils';
 
+
 class ConfirmPage extends React.Component{
-    state = {
-        disabled: false
-    };
+    constructor(){
+        super();
+        this.state = {
+            disabled: false
+        };
+    }
 
-    handlePrint =  async () => {
+    handlePrint = (event) => {
+        if( this.state.disabled){
+            return;
+        }
+        this.setState({disabled:true});
+        this.sendPrint();
+    }
+
+    sendPrint =  async () => {
         const { currentUser, cartItems, total } = this.props;
-        
-        this.setState({
-            ...this.state,
-            disabled: true
-        });
-
+    
         //console.log("CURRENTUSER:", currentUser);
         await printTicket(currentUser.printer, buildTicket(currentUser, cartItems, total));
 
@@ -44,13 +51,12 @@ class ConfirmPage extends React.Component{
     }
     render(){
         const {clearAllItems, history} = this.props; 
-
         return(
             <ConfirmPageContainer>
                 <ConfirmTitleContainer>VENTA DE VALES</ConfirmTitleContainer>
                 <Ticket/>
                 <ConfirmButtonsContainer>
-                    <ConfirmButton disabled={this.state.disabled} type='button' onClick={()=>this.handlePrint()}>
+                    <ConfirmButton type='button' onClick={this.handlePrint}>
                         IMPRIMIR
                     </ConfirmButton>
                     <ConfirmButton type='button'
