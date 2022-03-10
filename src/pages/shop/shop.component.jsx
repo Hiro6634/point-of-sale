@@ -40,7 +40,7 @@ const Shop = ({collections}) => {
         {
             collections !== null ? 
                 collections.map((col)=>(
-                <ShopItem key={col.id} item={col} />                    
+                    col.enable?(<ShopItem key={col.id} item={col} />):null
             ))
             : null
         }

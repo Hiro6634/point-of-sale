@@ -16,7 +16,7 @@ export const ShopItemDeleteContainer = styled.div`
 export const ShopItemDescriptionContainer = styled.span`
     text-transform: capitalize;
     width: 40%;
-    padding: 5px;
+    padding: 1px;
 `;
 export const ShopItemDescriptionContainerYl = styled.span`
     text-transform: capitalize;
