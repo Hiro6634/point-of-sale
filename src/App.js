@@ -64,6 +64,7 @@ class App extends React.Component {
               null
             )
           }
+          <Route path='/point-of-sale' render={() => (<Redirect to='/'/>)}/>
           <Route exact path='/confirm' component={ConfirmPage}/>
           <Route path='/help' component={HelpPage}/>
           <Route 
@@ -71,7 +72,7 @@ class App extends React.Component {
             path = '/SignIn' 
             render={()=>
               currentUser ? (
-                <Redirect to='/' />
+                <Homepage/>
               ) : (
                 <SignInAndSignUpPage />
               )
