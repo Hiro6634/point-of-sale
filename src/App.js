@@ -40,6 +40,7 @@ class App extends React.Component {
   componentWillUnmount(){
     this.unsubscribeFromAuth();
   }
+  
   render(){
     const {currentUser} = this.props;
     return (
