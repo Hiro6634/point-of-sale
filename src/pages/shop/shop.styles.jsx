@@ -26,21 +26,23 @@ export const HeaderBlockContainer = styled.div`
 export const DescriptionContainer = styled.span`
     text-transform: capitalize;
     width: 40%;
+    text-align: center;
 `;
 
 export const PriceContainer = styled.span`
     text-transform: capitalize;
     width: 15%;
+    text-align: center;
 `;
 
 export const QuantityContainer = styled.span`
-    display: flex;
     text-transform: capitalize;
-    align-items: center;
+    text-align: center;
     width: 20%;
 `;
 
 export const DeleteContainer = styled.span`
     text-transform: capitalize;
     width: 10%;
+    text-align: center;
 `;
