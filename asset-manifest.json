@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/point-of-sale/static/css/main.6020308a.css",
-    "main.js": "/point-of-sale/static/js/main.f9153efd.js",
+    "main.js": "/point-of-sale/static/js/main.ce6d23be.js",
     "index.html": "/point-of-sale/index.html",
     "main.6020308a.css.map": "/point-of-sale/static/css/main.6020308a.css.map",
-    "main.f9153efd.js.map": "/point-of-sale/static/js/main.f9153efd.js.map"
+    "main.ce6d23be.js.map": "/point-of-sale/static/js/main.ce6d23be.js.map"
   },
   "entrypoints": [
     "static/css/main.6020308a.css",
-    "static/js/main.f9153efd.js"
+    "static/js/main.ce6d23be.js"
   ]
 }
