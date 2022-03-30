@@ -1,5 +1,6 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom/cjs/react-router-dom.min';
+import GitInfo from 'react-git-info/macro';
 
 import CustomButton from '../../components/custom-button/custom-button.component';
 import { 
@@ -8,6 +9,8 @@ import {
     HelpTextContainer,
     HelpButtonsContainer
  } from './help.styles';
+
+const gitInfo = GitInfo();
 
 const HelpPage = ({history}) => (
     <HelpPageContainer>
@@ -19,6 +22,7 @@ const HelpPage = ({history}) => (
         <HelpButtonsContainer>
             <CustomButton onClick={()=>history.goBack()}>VOLVER</CustomButton>
         </HelpButtonsContainer>
+        <p>{gitInfo.commit.shortHash}</p>
     </HelpPageContainer>
 );
 
