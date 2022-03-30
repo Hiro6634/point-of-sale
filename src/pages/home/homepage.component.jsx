@@ -34,9 +34,8 @@ class Homepage extends React.Component {
         const collectionRef = firestore.collection('collections');
         const categoriesRef = firestore.collection('categories');
 
-
-        collectionRef.get().then(snapshot => {
-            const collectionsMap = convertCollectionSnapshotToMap(snapshot);
+        const doc_watch = collectionRef.onSnapshot( async snapshot => {
+            const collectionsMap = await convertCollectionSnapshotToMap(snapshot);
             updateCollections(collectionsMap);
             this.setState({
                 ...this.state,
@@ -51,6 +50,22 @@ class Homepage extends React.Component {
             }
         });
 
+/*        collectionRef.get().then(snapshot => {
+            const collectionsMap = convertCollectionSnapshotToMap(snapshot);
+            updateCollections(collectionsMap);
+            this.setState({
+                ...this.state,
+                collectionsUpdated: true
+            });
+
+            if( this.state.categoriesUpdated ){
+                this.setState({ 
+                    ...this.state,
+                    loading: false
+                });
+            }
+        });
+*/
         categoriesRef.get().then(snapshot => {
             const categoriesMap = convertCategorySnapshotToMap(snapshot);
 
