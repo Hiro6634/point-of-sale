@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import Ticket from '../../components/ticket/ticket.component';
 import { clearAllItemsFromCart } from '../../redux/cart/cart.actions';
-import { printTicket } from '../../firebase/firebase.utils';
+import { printTicket, updateStock } from '../../firebase/firebase.utils';
 
 import { 
     ConfirmPageContainer,
@@ -30,7 +30,20 @@ class ConfirmPage extends React.Component{
             return;
         }
         this.setState({disabled:true});
+        this.updateStocks();
         this.sendPrint();
+    }
+
+    updateStocks = () => {
+        const { cartItems } = this.props;
+        
+        cartItems.map( item => {
+            this.updateProductStock(item.name.toLowerCase());
+        });
+    } 
+
+    updateProductStock = async (product) => {
+        await updateStock(product);
     }
 
     sendPrint =  async () => {
