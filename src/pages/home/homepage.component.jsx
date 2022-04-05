@@ -31,7 +31,7 @@ class Homepage extends React.Component {
 
     componentDidMount(){
         const {updateCollections, updateCategories} = this.props;
-        const collectionRef = firestore.collection('collections');
+        const collectionRef = firestore.collection('products');
         const categoriesRef = firestore.collection('categories');
 
         const doc_watch = collectionRef.onSnapshot( async snapshot => {
