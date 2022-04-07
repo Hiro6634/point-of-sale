@@ -38,13 +38,10 @@ class ConfirmPage extends React.Component{
         const { cartItems } = this.props;
         
         cartItems.map( item => {
-            this.updateProductStock(item.name.toLowerCase());
+            console.log("ITEM: " + item.name.toUpperCase() + " Quantity: " + item.quantity);
+            updateStock(item.name.toLowerCase(), item.quantity);
         });
     } 
-
-    updateProductStock = async (product) => {
-        await updateStock(product);
-    }
 
     sendPrint =  async () => {
         const { currentUser, cartItems, total } = this.props;

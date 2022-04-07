@@ -3,6 +3,7 @@ import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import { Mutex, withTimeout, E_TIMEOUT } from 'async-mutex';
 
+
 const config = {
     apiKey: "AIzaSyB_vEdLMXk3Fh649VwaLvg7iWCbwx0Jx08",
     authDomain: "ajbpos.firebaseapp.com",
@@ -44,7 +45,7 @@ const config = {
        return userRef;
   }
 
-  export const printTicket = async (printer, ticket) => {
+export const printTicket = async (printer, ticket) => {
     const ticketId = new Date().getTime();
     const queueRef = firestore.doc(`printers/${printer}/queue/${ticketId}`);
     
@@ -57,16 +58,41 @@ const config = {
     } 
 }
 
-    export const updateStock = async (product) => {
-        let dbLock = withTimeout(new Mutex(), 100);
-        let release = await dbLock.acquire();
-        //const batch = firestore.batch();
-        console.log("LOCK");
+
+    const decrementStock = async(product) => {
         console.log("Updating Stock of " + product);
-        const stockRef = firestore.doc(`stock/${product}`);
+        const stockRef = firestore.doc(`products/${product.toLowerCase()}`);
         try{
-            await stockRef.update({stock: firebase.firestore.FieldValue.increment(-1)});
-            console.log("STOCK Updated " );
+            const decrement = firebase.firestore.FieldValue.increment(-1);
+            await stockRef.update({stock: decrement});
+        }catch(error){
+            console.error(error);
+        }
+    }
+
+    export const updateStock = async (product, quantity) => {
+        let dbLock = withTimeout(new Mutex(), 100);
+        let release = await dbLock.acquire()
+        //const batch = firestore.batch();
+        const stockRef = firestore.collection('products').doc(product.toLowerCase());
+        try{
+//            stockRef.update({stock: firebase.firestore.FieldValue(-1)});
+
+            const stockDoc = await stockRef.get();
+            if( stockDoc.exists){
+                const {name, enable, stock, enablestop, stoplevel} = stockDoc.data();
+                console.log("PRODUCT " + name + " QTY:" + quantity);
+                const newStock = stock - quantity;
+                var newEnable = enable;
+                if( enablestop && stock <= stoplevel ){
+                    newEnable = false;
+                }                
+                stockRef.set({
+                    ...stockDoc.data(),
+                    stock: newStock,
+                    enable: newEnable
+                })
+            }
       } catch(error){
             console.log("ERROR", error);
             if( error === E_TIMEOUT){
@@ -75,22 +101,26 @@ const config = {
             //batch.delete();
         } finally {
             //batch.commit();
-            console.log("UNLOCK")
             release();
         }
+
         return true;
     }
 
   export const convertCollectionSnapshotToMap = collections => {
     const transformedCollection = collections.docs.map(doc=>{
-        const {name, category, price, enable} = doc.data();
+        const {name, category, price, enable, stock, warninglevel, stoplevel, enablestop} = doc.data();
 
         return {
             id: doc.id,
             name,
             price,
             category,
-            enable
+            enable,
+            stock,
+            warninglevel,
+            stoplevel,
+            enablestop
         };
     });
 
