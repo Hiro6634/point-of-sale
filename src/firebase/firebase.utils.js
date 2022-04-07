@@ -59,17 +59,6 @@ export const printTicket = async (printer, ticket) => {
 }
 
 
-    const decrementStock = async(product) => {
-        console.log("Updating Stock of " + product);
-        const stockRef = firestore.doc(`products/${product.toLowerCase()}`);
-        try{
-            const decrement = firebase.firestore.FieldValue.increment(-1);
-            await stockRef.update({stock: decrement});
-        }catch(error){
-            console.error(error);
-        }
-    }
-
     export const updateStock = async (product, quantity) => {
         let dbLock = withTimeout(new Mutex(), 100);
         let release = await dbLock.acquire()

@@ -39,7 +39,7 @@ class ConfirmPage extends React.Component{
         
         cartItems.map( item => {
             console.log("ITEM: " + item.name.toUpperCase() + " Quantity: " + item.quantity);
-            updateStock(item.name.toLowerCase(), item.quantity);
+            return updateStock(item.name.toLowerCase(), item.quantity);
         });
     } 
 

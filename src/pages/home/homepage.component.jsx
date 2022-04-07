@@ -34,7 +34,7 @@ class Homepage extends React.Component {
         const collectionRef = firestore.collection('products');
         const categoriesRef = firestore.collection('categories');
 
-        const doc_watch = collectionRef.onSnapshot( async snapshot => {
+        collectionRef.onSnapshot( async snapshot => {
             console.log("DB Change detected!");
             const collectionsMap = await convertCollectionSnapshotToMap(snapshot);
             updateCollections(collectionsMap);
