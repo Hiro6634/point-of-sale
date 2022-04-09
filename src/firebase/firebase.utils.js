@@ -69,17 +69,22 @@ export const printTicket = async (printer, ticket) => {
 
             const stockDoc = await stockRef.get();
             if( stockDoc.exists){
-                const {name, enable, stock, enablestop, stoplevel} = stockDoc.data();
+                const {name, enable, stock, enablestop, stoplevel, price, sales} = stockDoc.data();
+                
                 console.log("PRODUCT " + name + " QTY:" + quantity);
                 const newStock = stock - quantity;
+                const newSales = sales ? sales : 0 + quantity * price;
+                console.log("PRODUCT " + name + " SALES:" + newSales);
                 var newEnable = enable;
                 if( enablestop && stock <= stoplevel ){
                     newEnable = false;
                 }                
+
                 stockRef.set({
                     ...stockDoc.data(),
                     stock: newStock,
-                    enable: newEnable
+                    enable: newEnable,
+                    sales: newSales
                 })
             }
       } catch(error){
@@ -98,8 +103,7 @@ export const printTicket = async (printer, ticket) => {
 
   export const convertCollectionSnapshotToMap = collections => {
     const transformedCollection = collections.docs.map(doc=>{
-        const {name, category, price, enable, stock, warninglevel, stoplevel, enablestop} = doc.data();
-
+        const {name, category, price, enable, stock, warninglevel, stoplevel, enablestop, sales} = doc.data();
         return {
             id: doc.id,
             name,
@@ -109,7 +113,8 @@ export const printTicket = async (printer, ticket) => {
             stock,
             warninglevel,
             stoplevel,
-            enablestop
+            enablestop,
+            sales
         };
     });
 
