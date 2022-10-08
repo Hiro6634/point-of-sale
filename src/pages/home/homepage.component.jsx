@@ -51,22 +51,6 @@ class Homepage extends React.Component {
             }
         });
 
-/*        collectionRef.get().then(snapshot => {
-            const collectionsMap = convertCollectionSnapshotToMap(snapshot);
-            updateCollections(collectionsMap);
-            this.setState({
-                ...this.state,
-                collectionsUpdated: true
-            });
-
-            if( this.state.categoriesUpdated ){
-                this.setState({ 
-                    ...this.state,
-                    loading: false
-                });
-            }
-        });
-*/
         categoriesRef.get().then(snapshot => {
             const categoriesMap = convertCategorySnapshotToMap(snapshot);
 
