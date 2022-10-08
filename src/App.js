@@ -41,50 +41,59 @@ class App extends React.Component {
     this.unsubscribeFromAuth();
   }
   
+//   render(){
+//     const {currentUser} = this.props;
+//     return (
+//       <div>
+//         <Header/>
+//         <Switch>
+//           <Route 
+//             exact 
+//             path = '/' 
+//             render={()=>
+//               currentUser ? (
+//                 <Homepage />
+//               ) : (
+//                 <SignInAndSignUpPage/>
+//               )
+//             }
+//           />
+//           {
+//             currentUser ? (
+//               <Route path='/config' component={ConfigPage}/>
+//             ):(
+//               null
+//             )
+//           }
+//           <Route path='/point-of-sale' render={() => (<Redirect to='/'/>)}/>
+//           <Route exact path='/confirm' component={ConfirmPage}/>
+//           <Route path='/help' component={HelpPage}/>
+//           <Route 
+//             exact
+//             path = '/SignIn' 
+//             render={()=>
+//               currentUser ? (
+//                 <Homepage/>
+//               ) : (
+//                 <SignInAndSignUpPage />
+//               )
+//             } 
+//           />
+//         </Switch>
+//       </div>
+//     );
+//   }
+// }
+
   render(){
     const {currentUser} = this.props;
     return (
       <div>
         <Header/>
-        <Switch>
-          <Route 
-            exact 
-            path = '/' 
-            render={()=>
-              currentUser ? (
-                <Homepage />
-              ) : (
-                <SignInAndSignUpPage/>
-              )
-            }
-          />
-          {
-            currentUser ? (
-              <Route path='/config' component={ConfigPage}/>
-            ):(
-              null
-            )
-          }
-          <Route path='/point-of-sale' render={() => (<Redirect to='/'/>)}/>
-          <Route exact path='/confirm' component={ConfirmPage}/>
-          <Route path='/help' component={HelpPage}/>
-          <Route 
-            exact
-            path = '/SignIn' 
-            render={()=>
-              currentUser ? (
-                <Homepage/>
-              ) : (
-                <SignInAndSignUpPage />
-              )
-            } 
-          />
-        </Switch>
       </div>
     );
   }
 }
-
 const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser
 });
