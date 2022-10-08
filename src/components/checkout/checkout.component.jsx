@@ -59,7 +59,7 @@ const Checkout = ({cartItems, total, history, clearAllItems, currentUser}) => {
         <CheckoutTitleContainer>TICKET</CheckoutTitleContainer>
         <Ticket/>
         <CheckoutButtonsContainer>
-            <CustomButton onClick={()=>handlePrint()}>IMPRIMIR</CustomButton>
+            <CustomButton onClick={()=>handlePrint()}>FINALIZAR</CustomButton>
             {/*<CustomButton onClick={()=>history.push('/confirm')}>IMPRIMIR</CustomButton>*/}
             <CustomButton isGoogleSignIn onClick={()=>clearAllItems()}>CANCELAR</CustomButton>
         </CheckoutButtonsContainer>        
