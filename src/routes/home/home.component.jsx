@@ -3,8 +3,10 @@ import Products from "../../components/products/products.component";
 
 const products = [
     {
-        id: 1,
-        name: 'pepe',
+        id: 'agua'  ,
+        name: 'AGUA',
+        price: '500',
+        quantity
     },
     {
         id: 2,
