@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './routes/home/home.component';
 import Navigation from './routes/navigation/navigation.component';
 import Help from './routes/help/help.component';
+import Authentication from './routes/authentication/authentication.component';
 
 const Config = () => {
     return(
@@ -10,6 +11,7 @@ const Config = () => {
         </div>
     );
 }
+
 const App = () => {
     return( 
         <Routes>
@@ -17,6 +19,7 @@ const App = () => {
                 <Route index element={<Home/>} />
                 <Route path='/help' element={<Help/>} />    
                 <Route path='/config' element={<Config/>} />
+                <Route path='/auth' element={<Authentication/>}/>
             </Route>
         </Routes>
     );

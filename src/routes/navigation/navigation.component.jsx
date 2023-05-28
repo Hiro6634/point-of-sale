@@ -21,6 +21,7 @@ const Navigation = () => {
                 <NavLinksContainer>
                     <NavLink to='/help'>AYUDA</NavLink>
                     <NavLink to='/config'>CONFIG</NavLink>
+                    <NavLink to='/auth'>INGRESAR</NavLink>
                 </NavLinksContainer>
             </NavigatioContainer>
             <Outlet/>
