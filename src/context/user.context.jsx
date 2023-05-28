@@ -9,7 +9,7 @@ export const UserProvider = ({children}) => {
     const [currentUSer, setCurrentUSer] = useState(null);
     const value = {currentUSer, setCurrentUSer};
 
-    useEffect(()=>{
-        const unsubscribe = 
-    });
+    // useEffect(()=>{
+    //     const unsubscribe = 
+    // });
 }
