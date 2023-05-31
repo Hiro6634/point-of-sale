@@ -1,15 +1,10 @@
-import { Route, Routes } from "react-router-dom";
+import { useContext } from "react";
+import { Route, Routes, useNavigate } from "react-router-dom";
 
+import { UserContext } from "./contexts/user.context";
 import Navigation from "./routes/navigation/navigation.component";
 import Authentication from "./routes/authentication/authenticationcomponent";
-
-const Home = () => {
-  return(
-    <div>
-      <h1>Home Page</h1>
-    </div>
-  );
-}
+import HomePage from "./routes/home/home.component";
 
 const Config = () => {
   return(
@@ -27,11 +22,19 @@ const Help = () => {
   );
 }
 
+
 const App = () => {
+  const {currentUser} = useContext(UserContext);
+  const navigate = useNavigate();
+
+  if(!currentUser){
+    navigate('/auth');
+  }
+
   return (
     <Routes>
       <Route path='/'element={<Navigation/>}>
-        <Route index element={<Home/>}/>
+        <Route index element={<HomePage/>}/>
         <Route path='/config' element={<Config/>}/>
         <Route path='/help' element={<Help/>}/>
         <Route path='/auth' element={<Authentication/>}/>

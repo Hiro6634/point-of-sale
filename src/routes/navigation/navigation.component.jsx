@@ -1,5 +1,7 @@
-import { Fragment } from "react";
+import { Fragment, useContext } from "react";
 import { Outlet } from "react-router-dom";
+import { UserContext } from "../../contexts/user.context";
+import { signOutUser } from "../../utils/firebase/firebase.utils";
 
 import logo from '../../assets/ajb.png';
 
@@ -13,6 +15,8 @@ import {
 
 
 const Navigation = () => {
+    const { currentUser } = useContext(UserContext);
+
     return(
         <Fragment>
             <NavigationContainer>
@@ -26,9 +30,11 @@ const Navigation = () => {
                     <NavLink to='/help'>
                         AYUDA
                     </NavLink>
-                    <NavLink to='/auth'>
-                        SIGN IN
-                    </NavLink>
+                    {currentUser ? (
+                        <NavLink as='span' onClick={signOutUser}>SALIR</NavLink>
+                    ):(
+                        <NavLink to='/auth'>INGRESAR</NavLink>
+                    )}
                 </NavLinks>
             </NavigationContainer>
             <Outlet/>
