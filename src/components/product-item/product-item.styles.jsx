@@ -11,6 +11,7 @@ export const DescriptionContainer = styled.span`
     text-transform: capitalize;
     width: 40%;
     text-align: left;
+    background-color: ${props=>(props.color)};
     /* border: 1px solid gray; */
 `;
 

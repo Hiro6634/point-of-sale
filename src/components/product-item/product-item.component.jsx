@@ -10,7 +10,7 @@ const ProductItem = ({product, color}) => {
     const {name, price, quantity, subtotal} = product;
     return(
         <ProductItemContainer>
-            <DescriptionContainer>{name.toUpperCase()}{color}</DescriptionContainer>
+            <DescriptionContainer color={color}>{name.toUpperCase()}</DescriptionContainer>
             <PriceContainer>{price}</PriceContainer>
             <QuantityContainer>{quantity}</QuantityContainer>
             <PriceContainer>{subtotal}</PriceContainer>
