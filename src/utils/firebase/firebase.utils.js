@@ -10,7 +10,10 @@ import {
     getFirestore,
     doc,
     getDoc,
-    setDoc
+    getDocs,
+    setDoc,
+    collection,
+    query,
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -68,3 +71,31 @@ export const signOutUser = async () => await signOut(auth);
 
 export const onAuthStateChangedListener = (callback) =>
     onAuthStateChanged(auth, callback);
+
+export const getProductsAndDocuments = async () => {
+    const collectionRef = collection(db, 'products');
+    const q = query(collectionRef);
+    const querySnapshot = await getDocs(q);
+
+    const productCol = querySnapshot.docs.reduce((acc, docSnapshot)=>{
+        acc.push({
+            quantity: 0,
+            subtotal: 0,
+            ...docSnapshot.data()
+        });
+        return acc;
+    },[]);
+    return productCol;
+};
+
+export const getCategoriesAndDocuments = async () => {
+    const collectionRef = collection(db, 'categories');
+    const q = query(collectionRef);
+    const querySnapshot = await getDocs(q);
+
+    const categoryCol = querySnapshot.docs.reduce((acc, docSnapshot)=>{
+        acc.push(docSnapshot.data());
+        return acc;
+    },[]);
+    return categoryCol;
+}

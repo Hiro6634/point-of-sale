@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 import { UserContext } from "./contexts/user.context";
 import Navigation from "./routes/navigation/navigation.component";
@@ -25,16 +25,11 @@ const Help = () => {
 
 const App = () => {
   const {currentUser} = useContext(UserContext);
-  const navigate = useNavigate();
-
-  if(!currentUser){
-    navigate('/auth');
-  }
 
   return (
     <Routes>
       <Route path='/'element={<Navigation/>}>
-        <Route index element={<HomePage/>}/>
+        {currentUser?(<Route index element={<HomePage/>}/>):(<Route index element={<Authentication/>}/>)}
         <Route path='/config' element={<Config/>}/>
         <Route path='/help' element={<Help/>}/>
         <Route path='/auth' element={<Authentication/>}/>

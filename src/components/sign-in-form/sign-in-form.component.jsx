@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
 import FormInput from '../form-input/form-input.component';
-import Button, { BUTTON_TYPE_CLASSES } from '../button/button.component';
+import Button from '../button/button.component';
 
 import {
   signInAuthUserWithEmailAndPassword,
@@ -16,59 +17,59 @@ const defaultFormFields = {
 };
 
 const SignInForm = () => {
-  const [formFields, setFormFields] = useState(defaultFormFields);
-  const { email, password } = formFields;
-  const navigate = useNavigate();
-
-  const resetFormFields = () => {
+    const [formFields, setFormFields] = useState(defaultFormFields);
+    const { email, password } = formFields;
+    const navigate = useNavigate();
+    
+    const resetFormFields = () => {
     setFormFields(defaultFormFields);
-  };
+    };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+    const handleSubmit = async (event) => {
+        event.preventDefault();
 
-    try {
-      await signInAuthUserWithEmailAndPassword(email, password);
-      resetFormFields();
-      navigate('/');
-    } catch (error) {
-      console.log('user sign in failed', error);
-    }
-  };
+        try {
+            await signInAuthUserWithEmailAndPassword(email, password);
+            resetFormFields();
+            navigate('/');
+        } catch (error) {
+            console.log('user sign in failed', error);
+        }
+    };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
+    const handleChange = (event) => {
+        const { name, value } = event.target;
 
-    setFormFields({ ...formFields, [name]: value });
-  };
+        setFormFields({ ...formFields, [name]: value });
+    };
 
-  return (
-    <SignInContainer>
-      <h2>Ingrese su email y password</h2>
-      <form onSubmit={handleSubmit}>
-        <FormInput
-          label='Email'
-          type='email'
-          required
-          onChange={handleChange}
-          name='email'
-          value={email}
-        />
+    return (
+        <SignInContainer>
+            <h2>Ingrese su email y password</h2>
+            <form onSubmit={handleSubmit}>
+            <FormInput
+                label='Email'
+                type='email'
+                required
+                onChange={handleChange}
+                name='email'
+                value={email}
+            />
 
-        <FormInput
-          label='Password'
-          type='password'
-          required
-          onChange={handleChange}
-          name='password'
-          value={password}
-        />
-        <ButtonsContainer>
-          <Button type='submit'>Ingresar</Button>
-        </ButtonsContainer>
-      </form>
-    </SignInContainer>
-  );
+            <FormInput
+                label='Password'
+                type='password'
+                required
+                onChange={handleChange}
+                name='password'
+                value={password}
+            />
+            <ButtonsContainer>
+                <Button type='submit'>Ingresar</Button>
+            </ButtonsContainer>
+            </form>
+        </SignInContainer>
+    );
 };
 
 export default SignInForm;
