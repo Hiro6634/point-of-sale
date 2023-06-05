@@ -24,11 +24,11 @@ const Navigation = () => {
                     <LogoImgContainer src={logo} alt="logo"/>
                 </LogoContainer>
                 <NavLinks>
-                    <NavLink to='/config'>
-                        CONFIGURACION
-                    </NavLink>
                     <NavLink to='/help'>
                         AYUDA
+                    </NavLink>
+                    <NavLink to='/config'>
+                        CONF
                     </NavLink>
                     {currentUser ? (
                         <NavLink as='span' onClick={signOutUser}>SALIR</NavLink>

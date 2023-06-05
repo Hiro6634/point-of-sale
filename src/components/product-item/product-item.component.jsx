@@ -14,7 +14,7 @@ const ProductItem = ({product, color}) => {
             <PriceContainer>{price}</PriceContainer>
             <QuantityContainer>{quantity}</QuantityContainer>
             <PriceContainer>{subtotal}</PriceContainer>
-            <DeleteContainer>X</DeleteContainer>
+            <DeleteContainer>&#10005;</DeleteContainer>
         </ProductItemContainer>
     );
 };

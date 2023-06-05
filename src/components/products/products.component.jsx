@@ -14,7 +14,7 @@ import {
 } from "./products.style";
 
 const Products = () => {
-    const { productsCol } = useContext(ProductsContext);
+    const { productsCol, getProductsOrderByCategory } = useContext(ProductsContext);
     const { categoriesCol } = useContext(CategoriesContext);
 
     return(
@@ -26,14 +26,19 @@ const Products = () => {
                 <PriceContainer>S.Total</PriceContainer>
                 <DeleteContainer>Borrar</DeleteContainer>
             </ProductsHeaderContainer>
-            {categoriesCol&&productsCol&&
-                categoriesCol.sort((a,b)=>a.order-b.order).map((category)=>(
-                    productsCol.filter(product=>product.category.toUpperCase()===category.name.toUpperCase())
-                        .map((product)=>{
-                            const {id} = product;
-                            return(<ProductItem key={id} product={product} color={category.color}/>);
-                        })
-                ))
+            {
+                getProductsOrderByCategory().map((product)=>{
+                    const {id} = product;
+                    return(<ProductItem key={id}/>);
+                })
+            // categoriesCol&&productsCol&&
+            //     categoriesCol.sort((a,b)=>a.order-b.order).map((category)=>(
+            //         productsCol.filter(product=>product.category.toUpperCase()===category.name.toUpperCase())
+            //             .map((product)=>{
+            //                 const {id} = product;
+            //                 return(<ProductItem key={id} product={product} color={category.color}/>);
+            //             })
+            //     ))
             }
         </ProductsContainer>        
     );

@@ -7,18 +7,24 @@ export const CategoriesContext = createContext({
 });
 
 export const CategoriesProvider = ({children}) => {
-    const [categoriesCol, setCategoriesCol] = useState(null);
-    const value = {categoriesCol, setCategoriesCol};
+    const [categoriesCol, setCategoriesCol] = useState({
+        setCategoriesCol: ()=>null,
+        categoriesCol:[]
+    });
 
     useEffect(()=>{
+        console.log("CATEGORIES BEGIN");
         const getCategoryCol = async () => {
             const categoryCol = await getCategoriesAndDocuments();
+            console.log("GET CATEGOR...", categoryCol);
             setCategoriesCol(categoryCol);
         };
          
         getCategoryCol();
+        console.log("CATEGORIES END");
     },[]);
 
+    const value = {categoriesCol, setCategoriesCol};
     return <CategoriesContext.Provider value={value}>{children}</CategoriesContext.Provider>;
 }
 

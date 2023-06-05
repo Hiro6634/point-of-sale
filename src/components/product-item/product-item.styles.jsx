@@ -2,16 +2,18 @@ import styled from "styled-components";
 
 export const ProductItemContainer = styled.div`
     width: auto;
-    padding: 1px 0;
+    padding: 5px 0;
     display: flex;
     justify-content: space-between;
 `;
 
 export const DescriptionContainer = styled.span`
     text-transform: capitalize;
+    font-weight: bold;
     width: 40%;
     text-align: left;
     background-color: ${props=>(props.color)};
+    text
     /* border: 1px solid gray; */
 `;
 
