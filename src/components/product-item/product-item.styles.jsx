@@ -13,7 +13,7 @@ export const DescriptionContainer = styled.span`
     width: 40%;
     text-align: left;
     background-color: ${props=>(props.color)};
-    text
+    cursor: pointer;
     /* border: 1px solid gray; */
 `;
 
@@ -35,5 +35,6 @@ export const DeleteContainer = styled.span`
     text-transform: capitalize;
     width: 10%;
     text-align: center;
+    cursor: pointer;
     /* border: 1px solid gray; */
 `;

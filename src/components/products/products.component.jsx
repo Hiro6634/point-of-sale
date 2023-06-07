@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ProductsContext } from "../../contexts/products.context";
 import { CategoriesContext } from "../../contexts/categories.context";
 
@@ -14,8 +14,28 @@ import {
 } from "./products.style";
 
 const Products = () => {
-    const { productsCol, getProductsOrderByCategory } = useContext(ProductsContext);
+    const { productsCol } = useContext(ProductsContext);
     const { categoriesCol } = useContext(CategoriesContext);
+    const [ productsLst, setProductsLst] = useState([]);
+
+    useEffect(() =>{
+        if( !categoriesCol ) {
+            return;
+        }
+        setProductsLst(categoriesCol.sort((a,b)=>a.order-b.order).reduce((acc,category)=>{
+            productsCol.filter(product=>product.category.toUpperCase() === category.name.toUpperCase())
+                .map((product)=>{
+                    if( product.enable ){
+                        acc.push({
+                            color: category.color,
+                            ...product}
+                        );
+                    }
+                    return acc;
+                })
+            return acc;
+        },[]));
+    }, [productsCol, categoriesCol]);
 
     return(
         <ProductsContainer>
@@ -27,18 +47,14 @@ const Products = () => {
                 <DeleteContainer>Borrar</DeleteContainer>
             </ProductsHeaderContainer>
             {
-                getProductsOrderByCategory().map((product)=>{
-                    const {id} = product;
-                    return(<ProductItem key={id}/>);
-                })
-            // categoriesCol&&productsCol&&
-            //     categoriesCol.sort((a,b)=>a.order-b.order).map((category)=>(
-            //         productsCol.filter(product=>product.category.toUpperCase()===category.name.toUpperCase())
-            //             .map((product)=>{
-            //                 const {id} = product;
-            //                 return(<ProductItem key={id} product={product} color={category.color}/>);
-            //             })
-            //     ))
+            productsLst&&
+                productsLst.map((product)=>(
+                    <ProductItem 
+                        key={product.id} 
+                        product={product} 
+                        color={product.color}
+                    />
+                ))
             }
         </ProductsContainer>        
     );

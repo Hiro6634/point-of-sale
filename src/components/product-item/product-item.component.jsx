@@ -1,3 +1,6 @@
+import { useContext, useEffect, useState } from "react";
+import { CartContext } from "../../contexts/cart.context";
+
 import { 
     ProductItemContainer,
     DescriptionContainer,
@@ -6,15 +9,49 @@ import {
     DeleteContainer
 } from "./product-item.styles";
 
+
 const ProductItem = ({product, color}) => {
-    const {name, price, quantity, subtotal} = product;
+    const {name, price } = product;
+    const [quantity, setQuantity] = useState(0);
+    const [subtotal, setSubtotal] = useState(0);
+
+    const {        
+        addItemToCart,
+        clearItemFromCart,
+        getQuatityFromCart,
+        cartCount
+    } = useContext(CartContext);
+
+    const handleNameClick = () => {
+        addItemToCart(product);
+    }
+
+    const handleDeleteClick = () => {
+        clearItemFromCart(product);
+    }
+
+    useEffect(()=>{
+        const quantity = getQuatityFromCart(product);
+        setQuantity(quantity);
+        setSubtotal(quantity*price);
+    },[cartCount]);
+
     return(
         <ProductItemContainer>
-            <DescriptionContainer color={color}>{name.toUpperCase()}</DescriptionContainer>
+            <DescriptionContainer 
+                color={color} 
+                onClick={handleNameClick}
+            >
+                {name.toUpperCase()}
+            </DescriptionContainer>
             <PriceContainer>{price}</PriceContainer>
             <QuantityContainer>{quantity}</QuantityContainer>
             <PriceContainer>{subtotal}</PriceContainer>
-            <DeleteContainer>&#10005;</DeleteContainer>
+            <DeleteContainer
+                onClick={handleDeleteClick}
+            >
+                &#10005;
+            </DeleteContainer>
         </ProductItemContainer>
     );
 };
