@@ -31,10 +31,10 @@ const ProductItem = ({product, color}) => {
     }
 
     useEffect(()=>{
-        const quantity = getQuatityFromCart(product);
-        setQuantity(quantity);
-        setSubtotal(quantity*price);
-    },[cartCount]);
+        const qtty = getQuatityFromCart(product);
+        setQuantity(qtty);
+        setSubtotal(qtty*price);
+    },[cartCount, price, product, getQuatityFromCart]);
 
     return(
         <ProductItemContainer>
@@ -44,9 +44,9 @@ const ProductItem = ({product, color}) => {
             >
                 {name.toUpperCase()}
             </DescriptionContainer>
-            <PriceContainer>{price}</PriceContainer>
+            <PriceContainer>${price}</PriceContainer>
             <QuantityContainer>{quantity}</QuantityContainer>
-            <PriceContainer>{subtotal}</PriceContainer>
+            <PriceContainer>${subtotal}</PriceContainer>
             <DeleteContainer
                 onClick={handleDeleteClick}
             >

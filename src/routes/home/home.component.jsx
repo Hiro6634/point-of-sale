@@ -1,14 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import Products from "../../components/products/products.component";
+import Checkout from "../../components/checkout/checkout.component";
 import { HomeContainer } from "./home.styles";
 import { CartContext } from "../../contexts/cart.context";
-const Cart = () => {
-    return(
-        <div>
-            <h2>Cart List</h2>
-        </div>
-    );
-}
 
 const HomePage = () => {
     const {cartCount} = useContext(CartContext);
@@ -20,7 +14,7 @@ const HomePage = () => {
     return(
         <HomeContainer>
             <Products/>
-            {!hideCart?(<Cart/>): null}
+            {!hideCart?(<Checkout/>): null}
         </HomeContainer>
     );
 };
