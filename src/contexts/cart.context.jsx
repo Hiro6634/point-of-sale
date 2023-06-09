@@ -68,7 +68,10 @@ export const CartProvider = ({children}) => {
     }, [cartItems]);
 
     const addItemToCart = (productToAdd) => {
-        setCartItems(addCartItem(cartItems, productToAdd));
+        setCartItems(addCartItem(cartItems, {
+            id: productToAdd.id,
+            name: productToAdd.name
+        }));
     };
 
     const removeItemFromCart = (cardtItemToRemove) => {

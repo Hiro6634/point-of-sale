@@ -2,7 +2,8 @@ import { createContext, useState, useEffect } from "react";
 import { getProductsAndDocuments } from "../utils/firebase/firebase.utils";
 
 export const ProductsContext = createContext({
-    productsCol: null    
+    productsCol: null,
+    updateCounters: () => {}    
 });
 
 export const ProductsProvider = ({children}) => {
@@ -16,8 +17,12 @@ export const ProductsProvider = ({children}) => {
         getProductCol();
     },[]);
 
+    const updateCounters = (product, itemSaled ) => {
+
+    };
     const value = {
-        productsCol 
+        productsCol,
+        updateCounters 
     };
 
     return <ProductsContext.Provider value={value}>{children}</ProductsContext.Provider>;

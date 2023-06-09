@@ -13,7 +13,7 @@ import {
     getDocs,
     setDoc,
     collection,
-    query,
+    query
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -45,11 +45,15 @@ export const createUserDocumentFromAuth = async (
     if( !userSnapshot.exists()){
         const {displayName, email} = userAuth;
         const createAt = new Date();
+        const printer = "PRN1";
+        const enablePrinter = false;
 
         try{
             await setDoc(userDocRef, {
                 displayName,
                 email,
+                printer,
+                enablePrinter,
                 createAt,
                 ...additionalInformation,
             });
@@ -98,4 +102,40 @@ export const getCategoriesAndDocuments = async () => {
         return acc;
     },[]);
     return categoryCol;
+}
+
+
+export const printTicket = async (printer, ticket) => {
+    const ticketId = new Date().getTime();
+    const printerCollection = db.collection('printers');
+
+    try{
+        await printerCollection.doc(`printers/${printer}/queue/${ticketId}`).set(ticket);
+    } catch(error){
+        console.error(error);     
+    } 
+}
+
+export const decCounter = async (productId, quantity) => {
+    try{
+        const productsRef = collection(db,'products');
+        const productRef = productsRef.doc(productId.toLowerCase())
+        await db.runTransaction(async(transaction) => {
+            const productDoc = await transaction.get(productRef);
+            if( productDoc.exists ){
+                const {name, stock, price, sales, unitsPerSale } = productDoc.data();
+                console.log("PRODUCT " + name + " QTY: " + quantity);
+                const newStock = stock - (quantity * unitsPerSale);
+                const newSales = sales ? sales : 0 + quantity * price;
+
+                transaction.update( productRef, {
+                    stock: newStock,
+                    sales: newSales
+                });
+            }
+        });
+        console.log("Product " + productId + " updated successfully");
+    }catch(error){
+        console.log('Fail to update counter ', error);
+    }
 }

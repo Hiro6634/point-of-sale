@@ -5,6 +5,7 @@ import { UserProvider } from './contexts/user.context';
 import { ProductsProvider } from './contexts/products.context';
 import { CartProvider } from './contexts/cart.context';
 import { CategoriesProvider } from './contexts/categories.context';
+// import { QueueProvider } from './contexts/queue.context';
 
 import './index.css';
 import App from './App';
