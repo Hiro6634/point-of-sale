@@ -18,7 +18,7 @@ const ProductItem = ({product, color}) => {
     const {        
         addItemToCart,
         clearItemFromCart,
-        getQuatityFromCart,
+        getQuantityFromCart,
         cartCount
     } = useContext(CartContext);
 
@@ -31,10 +31,10 @@ const ProductItem = ({product, color}) => {
     }
 
     useEffect(()=>{
-        const qtty = getQuatityFromCart(product);
+        const qtty = getQuantityFromCart(product);
         setQuantity(qtty);
         setSubtotal(qtty*price);
-    },[cartCount, price, product, getQuatityFromCart]);
+    },[cartCount, price, product, getQuantityFromCart]);
 
     return(
         <ProductItemContainer>
