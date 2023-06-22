@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from "react";
-import { CartContext } from "../../contexts/cart.context";
+import { useEffect, useState } from "react";
+import useCart from "../../contexts/cart.context";
 
 import { 
     ProductItemContainer,
@@ -20,7 +20,7 @@ const ProductItem = ({product, color}) => {
         clearItemFromCart,
         getQuantityFromCart,
         cartCount
-    } = useContext(CartContext);
+    } = useCart();
 
     const handleNameClick = () => {
         addItemToCart(product);

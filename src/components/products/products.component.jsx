@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from "react";
-import { ProductsContext } from "../../contexts/products.context";
-import { CategoriesContext } from "../../contexts/categories.context";
+import { useEffect, useState } from "react";
+import useProducts from "../../contexts/products.context";
+import useCategories from "../../contexts/categories.context";
 
 import ProductItem from "../product-item/product-item.component";
 
@@ -14,8 +14,8 @@ import {
 } from "./products.style";
 
 const Products = () => {
-    const { productsCol } = useContext(ProductsContext);
-    const { categoriesCol } = useContext(CategoriesContext);
+    const { productsCol, getProductsOrderedByCategory } = useProducts();
+    const { categoriesCol } = useCategories();
     const [ productsLst, setProductsLst] = useState([]);
 
     useEffect(() =>{
@@ -35,6 +35,7 @@ const Products = () => {
                 })
             return acc;
         },[]));
+        // setProductsLst(getProductsOrderedByCategory());
     }, [productsCol, categoriesCol]);
 
     return(
