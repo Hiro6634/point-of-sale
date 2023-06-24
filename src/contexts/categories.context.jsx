@@ -1,5 +1,5 @@
 import { createContext, useEffect, useReducer, useContext } from "react";
-import { getCategoriesAndDocuments } from "../utils/firebase/firebase.utils";
+import { onCategoriesUpdatedListener } from "../utils/firebase/firebase.utils";
 import categoriesReducer, {initialState, CategoriesActionType} from "./categories.reducer";
 
 export const CategoriesContext = createContext(initialState);
@@ -23,13 +23,10 @@ export const CategoriesProvider = ({children}) => {
     }
 
     useEffect(()=>{
-        const getCategoryCol = async () => {
-            const categoryCol = await getCategoriesAndDocuments();
+        onCategoriesUpdatedListener((categoryCol)=>{
             setCategories(categoryCol);
             setOrderedCategories(categoryCol);
-        };
-         
-        getCategoryCol();
+        })
     },[]);
 
     const value = {

@@ -1,5 +1,5 @@
 import { createContext, useEffect, useReducer, useContext } from "react";
-import { getProductsAndDocuments } from "../utils/firebase/firebase.utils";
+import { onProductsChangedListener } from "../utils/firebase/firebase.utils";
 import productsReducer, { initialState, ProductsActionType } from "./products.reducer";
 import useCategories from "./categories.context";
 
@@ -39,11 +39,9 @@ export const ProductsProvider = ({children}) => {
     };
 
     useEffect( ()=>{
-        const getProductCol = async () => {
-            const productCol = await getProductsAndDocuments();
+        onProductsChangedListener((productCol)=>{
             setProducts(productCol);
-        };
-        getProductCol();
+        });
     },[]);
 
     const value = {

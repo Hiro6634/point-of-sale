@@ -13,7 +13,8 @@ import {
     getDocs,
     setDoc,
     collection,
-    query
+    query,
+    onSnapshot
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -92,6 +93,23 @@ export const getProductsAndDocuments = async () => {
     return productCol;
 };
 
+export const onProductsChangedListener = (callback) => {
+    const collectionRef = collection(db, 'products');
+    // const q = query(collectionRef);
+    
+    onSnapshot(collectionRef, (querySnapshot)=>{
+        const productCol = querySnapshot.docs.reduce((acc, docSnapshot)=>{
+            acc.push({
+                quantity: 0,
+                subtotal: 0,
+                ...docSnapshot.data()
+            });
+            return acc;
+        },[]);
+        callback(productCol);
+    });
+}
+
 export const getCategoriesAndDocuments = async () => {
     const collectionRef = collection(db, 'categories');
     const q = query(collectionRef);
@@ -102,6 +120,17 @@ export const getCategoriesAndDocuments = async () => {
         return acc;
     },[]);
     return categoryCol;
+}
+
+export const onCategoriesUpdatedListener = (callback) => {
+    const collectionRef = collection(db, 'categories');
+    onSnapshot( collectionRef, (querySnapshot) =>{
+        const categoryCol = querySnapshot.docs.reduce((acc,docSnapshot)=>{
+            acc.push(docSnapshot.data());
+            return acc;
+        },[]);
+        callback(categoryCol);
+    });
 }
 
 
