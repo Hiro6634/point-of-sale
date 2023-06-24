@@ -1,8 +1,5 @@
-import { useContext } from "react";
-import { CartContext } from "../../contexts/cart.context";
-// import { QueueContext } from "../../contexts/queue.context";
-import { decCounter } from "../../utils/firebase/firebase.utils";
-
+import useCart from "../../contexts/cart.context";
+import useProducts from "../../contexts/products.context";
 import Button, { BUTTON_TYPE_CLASSES } from "../button/button.component";
 import Ticket from "../ticket/ticket.component";
 
@@ -12,9 +9,13 @@ import {
     CheckoutButtonsContainer
 } from "./checkout.style"; 
 
+const Print = (ticket) => {
+    console.log(JSON.stringify(ticket,null,2));
+}
 
 const Checkout = () => {
-    const {cartItems, clearAllItemsFromCart} = useContext(CartContext);
+    const {cartItems, clearAllItemsFromCart} = useCart();
+    const {updateCounters} = useProducts();
     // const {enqueue} = useContext(QueueContext);
 
     const handleCancel = ()=>{
@@ -23,10 +24,26 @@ const Checkout = () => {
 
     const handleCheckout = () => {
         //Update Counters
-        cartItems.map((item)=>{
-           return decCounter(item.id, item.quantity);
-        });
-        //Print
+        let ticket = {items:[]};
+        const total = cartItems.reduce((total, item)=>{
+            updateCounters(item.name, item.quantity);
+            const sale = item.quantity*item.price;
+
+            ticket.items.push({
+                name: item.name,
+                quantity: item.quantity,
+                sale: sale
+            });
+            total = total + sale;
+            return total;
+        //    return decCounter(item.id, item.quantity);
+        },0);
+        ticket = {
+            ...ticket,
+            total: total
+        }
+        Print(ticket);
+        clearAllItemsFromCart();
     }
 
     return(

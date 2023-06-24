@@ -2,6 +2,7 @@ import { createContext, useEffect, useReducer, useContext } from "react";
 import { onProductsChangedListener } from "../utils/firebase/firebase.utils";
 import productsReducer, { initialState, ProductsActionType } from "./products.reducer";
 import useCategories from "./categories.context";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export const ProductsContext = createContext(initialState);
 
@@ -35,7 +36,7 @@ export const ProductsProvider = ({children}) => {
     }
 
     const updateCounters = (product, itemSaled ) => {
-        console.log("This is correct?");
+        console.log(product+ " " + itemSaled);
     };
 
     useEffect( ()=>{
