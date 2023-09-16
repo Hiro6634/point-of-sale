@@ -77,6 +77,7 @@ export const signOutUser = async () => await signOut(auth);
 export const onAuthStateChangedListener = (callback) =>
     onAuthStateChanged(auth, callback);
 
+// Being deprecate
 export const getProductsAndDocuments = async () => {
     const collectionRef = collection(db, 'products');
     const q = query(collectionRef);
@@ -109,6 +110,30 @@ export const onProductsChangedListener = (callback) => {
         callback(productCol);
     });
 }
+
+export const updateStock = async (productid, units, sale) => {
+    try{
+        const stockRef = collection(db, "stock").doc(productid.toLowerCase());
+
+        await db.runTransaction( async (transaction)=>{
+            const stockSnapshot = await transaction.get(stockRef);
+            const currentStock = stockSnapshot.data();
+            const {stock, sales } = currentStock;
+            
+            const updatedStock = {
+                ...currentStock,
+                stock: stock - units,
+                sales: sales + sale
+            };
+
+            transaction.update(stockRef, updatedStock);
+        });
+
+        console.log("Item Updated");
+    } catch(error){
+            console.error('Updating error: ', error);
+    }
+}  
 
 export const getCategoriesAndDocuments = async () => {
     const collectionRef = collection(db, 'categories');

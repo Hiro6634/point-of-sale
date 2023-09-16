@@ -2,7 +2,6 @@ import { createContext, useEffect, useReducer, useContext } from "react";
 import { onProductsChangedListener } from "../utils/firebase/firebase.utils";
 import productsReducer, { initialState, ProductsActionType } from "./products.reducer";
 import useCategories from "./categories.context";
-import { signInWithEmailAndPassword } from "firebase/auth";
 
 export const ProductsContext = createContext(initialState);
 
@@ -35,8 +34,14 @@ export const ProductsProvider = ({children}) => {
         return sortedList;
     }
 
-    const updateCounters = (product, itemSaled ) => {
-        console.log(product+ " " + itemSaled);
+    const updateStock = (productId, itemSaled ) => {
+        const product = state.productsCol.find(item=>item.id === productId);
+        const saleUnit = {
+            productId,
+            items: itemSaled * product.unitsPerSale,
+            sale: itemSaled * product.price
+        }
+        console.log(JSON.stringify(saleUnit, null,2));
     };
 
     useEffect( ()=>{
@@ -48,7 +53,7 @@ export const ProductsProvider = ({children}) => {
     const value = {
         productsCol: state.productsCol,
         getProductsOrderedByCategory,
-        updateCounters 
+        updateStock 
     };
 
     return <ProductsContext.Provider value={value}>{children}</ProductsContext.Provider>;

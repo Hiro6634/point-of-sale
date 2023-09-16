@@ -14,8 +14,8 @@ const Print = (ticket) => {
 }
 
 const Checkout = () => {
-    const {cartItems, clearAllItemsFromCart} = useCart();
-    const {updateCounters} = useProducts();
+    const {cartItems, cartTotal, clearAllItemsFromCart} = useCart();
+    const {updateStock} = useProducts();
     // const {enqueue} = useContext(QueueContext);
 
     const handleCancel = ()=>{
@@ -25,23 +25,19 @@ const Checkout = () => {
     const handleCheckout = () => {
         //Update Counters
         let ticket = {items:[]};
-        const total = cartItems.reduce((total, item)=>{
-            updateCounters(item.name, item.quantity);
-            const sale = item.quantity*item.price;
-
-            ticket.items.push({
+        cartItems.map((item)=>{
+            const sale = item.quantity * item.price;
+            updateStock(item.id, item.quantity);
+            return ticket.items.push({
                 name: item.name,
                 quantity: item.quantity,
                 sale: sale
             });
-            total = total + sale;
-            return total;
-        //    return decCounter(item.id, item.quantity);
-        },0);
+        });
         ticket = {
             ...ticket,
-            total: total
-        }
+            total: cartTotal
+        };
         Print(ticket);
         clearAllItemsFromCart();
     }

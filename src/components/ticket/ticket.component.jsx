@@ -1,6 +1,4 @@
-import { useContext } from "react";
-
-import { CartContext } from "../../contexts/cart.context";
+import useCart from "../../contexts/cart.context";
 import TicketItem from "../ticket-item/ticket-item.component";
 
 import { 
@@ -16,7 +14,7 @@ const Ticket = () => {
     const {
         cartTotal, 
         cartItems
-    } = useContext(CartContext);
+    } = useCart();
 
     return(
         <TicketContainer>
