@@ -17,16 +17,26 @@ import {
     onSnapshot
 } from 'firebase/firestore';
 
+// const firebaseConfig = {
+//     apiKey: "AIzaSyB_vEdLMXk3Fh649VwaLvg7iWCbwx0Jx08",
+//     authDomain: "ajbpos.firebaseapp.com",
+//     databaseURL: "https://ajbpos-default-rtdb.firebaseio.com",
+//     projectId: "ajbpos",
+//     storageBucket: "ajbpos.appspot.com",
+//     messagingSenderId: "955048515609",
+//     appId: "1:955048515609:web:01ad37f2cdcbf4016f7288",
+//     measurementId: "G-F0RFSFCFP6"
+// };
 const firebaseConfig = {
-    apiKey: "AIzaSyB_vEdLMXk3Fh649VwaLvg7iWCbwx0Jx08",
-    authDomain: "ajbpos.firebaseapp.com",
-    databaseURL: "https://ajbpos-default-rtdb.firebaseio.com",
-    projectId: "ajbpos",
-    storageBucket: "ajbpos.appspot.com",
-    messagingSenderId: "955048515609",
-    appId: "1:955048515609:web:01ad37f2cdcbf4016f7288",
-    measurementId: "G-F0RFSFCFP6"
+    apiKey: "AIzaSyAX-qkALEtk-Vxdd-4bwU5gXundlcwFGwk",
+    authDomain: "pointofsale-ae0fd.firebaseapp.com",
+    projectId: "pointofsale-ae0fd",
+    storageBucket: "pointofsale-ae0fd.appspot.com",
+    messagingSenderId: "855078399227",
+    appId: "1:855078399227:web:83d784b43ab9385154145e",
+    measurementId: "G-1RSNNYZ9XE"
 };
+
 
 initializeApp(firebaseConfig);
 
@@ -94,22 +104,22 @@ export const getProductsAndDocuments = async () => {
     return productCol;
 };
 
-export const onProductsChangedListener = (callback) => {
-    const collectionRef = collection(db, 'products');
-    // const q = query(collectionRef);
+// export const onProductsChangedListener = (callback) => {
+//     const collectionRef = collection(db, 'products');
+//     // const q = query(collectionRef);
     
-    onSnapshot(collectionRef, (querySnapshot)=>{
-        const productCol = querySnapshot.docs.reduce((acc, docSnapshot)=>{
-            acc.push({
-                quantity: 0,
-                subtotal: 0,
-                ...docSnapshot.data()
-            });
-            return acc;
-        },[]);
-        callback(productCol);
-    });
-}
+//     onSnapshot(collectionRef, (querySnapshot)=>{
+//         const productCol = querySnapshot.docs.reduce((acc, docSnapshot)=>{
+//             acc.push({
+//                 quantity: 0,
+//                 subtotal: 0,
+//                 ...docSnapshot.data()
+//             });
+//             return acc;
+//         },[]);
+//         callback(productCol);
+//     });
+// }
 
 export const updateStock = async (productid, units, sale) => {
     try{
@@ -193,3 +203,56 @@ export const decCounter = async (productId, quantity) => {
         console.log('Fail to update counter ', error);
     }
 }
+export const getCollectionAndDocuments = async (collectionName) => {
+    const collectionRef = collection(db, collectionName);
+    const q = query(collectionRef);
+
+    const querySnapshot = await getDocs(q);
+    const collectionMap = querySnapshot.docs.reduce((acc, docSnapshot)=> {
+        acc.push(docSnapshot.data());
+        return acc;
+    }, []); 
+
+    return collectionMap;
+}
+
+const getProductsSortByCategory = async (querySnapshot) => {
+    const unordererProductMap = querySnapshot.docs.reduce((acc, docSnapshot)=>{
+        acc.push(docSnapshot.data());
+        return acc;
+    }, []);
+
+    const categoryMap = await getCollectionAndDocuments("categories");
+    if( categoryMap === undefined || categoryMap.length === 0)
+        return unordererProductMap;
+
+    const productsMap = categoryMap.sort((a,b)=>a.order-b.order).reduce((acc, category)=>{
+        unordererProductMap.filter(product=>product.category.toLowerCase() === category.name.toLowerCase()).map(product=>{
+            if(product.enable){
+                acc.push({
+                    color: category.color,
+                    ...product
+                });
+            } 
+            return acc;
+        });
+        return acc;
+    },[]);
+    return productsMap; 
+}
+
+export const getProductsOrderedByCategory = async () =>{
+    const productsRef = collection( db, "products");
+    const qry = query(productsRef);
+    const querySnapshot = await getDocs(qry);
+
+    return getProductsSortByCategory(querySnapshot);
+}
+
+export const onProductsChangedListener = (callback) => {
+    const productsRef = collection( db, "products");
+    
+    onSnapshot( productsRef, async (querySnapshot) =>{
+        callback(await getProductsSortByCategory(querySnapshot));
+    });
+ }

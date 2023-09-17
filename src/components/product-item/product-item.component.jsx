@@ -10,8 +10,9 @@ import {
 } from "./product-item.styles";
 
 
-const ProductItem = ({product, color}) => {
-    const {name, price } = product;
+const ProductItem = (props) => {
+    const {product} = props;
+    const {name, price, color } = product;
     const [quantity, setQuantity] = useState(0);
     const [subtotal, setSubtotal] = useState(0);
 

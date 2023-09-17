@@ -44,3 +44,9 @@ export const ProductsItemsContainer = styled.div`
     display: flex;
     justify-content: space-between;
 `;
+
+export const ProductsBodyContainer = styled.div`
+    margin: auto;    
+    width: 100%;
+    padding: 5px 0px;
+`;
