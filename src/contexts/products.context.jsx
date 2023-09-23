@@ -13,7 +13,8 @@ const INITIAL_STATE = {
 export const ProductsContext = createContext(INITIAL_STATE);
 
 const PRODUCTS_ACTION_TYPES = {
-    SET_PRODUCTS: 'SET_PRODUCTS'
+    SET_PRODUCTS: 'SET_PRODUCTS',
+    UPDATE_STOCK: 'UPDATE_STOCK'
 };
 
 const productsReducer = (state, action) => {
@@ -25,11 +26,20 @@ const productsReducer = (state, action) => {
                 ...state,
                 products: payload
             };
+        case PRODUCTS_ACTION_TYPES.UPDATE_STOCK:
+            return {
+                ...state,
+                products: updateStock(state.products, payload)
+            }
         default:
             throw new Error(`unhandled type of ${type} in productsReducer`);
 
     }
 };
+
+const updateStock = ( products, prductToUpdate) => {
+    return products;
+}
 
 export const ProductsProvider = ({children}) => {
     const [{products}, dispatch] = useReducer( productsReducer, INITIAL_STATE);
@@ -43,7 +53,8 @@ export const ProductsProvider = ({children}) => {
         const product = products.find(item=>item.id === productId);
         const saleUnit = {
             productId,
-            items: itemSaled * product.unitsPerSale,
+            // items: itemSaled * product.unitsPerSale,
+            items: itemSaled,
             sale: itemSaled * product.price
         }
         console.log(JSON.stringify(saleUnit, null,2));
