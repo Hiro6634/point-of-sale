@@ -3,8 +3,8 @@ import { Outlet } from "react-router-dom";
 import { UserContext } from "../../contexts/user.context";
 import { signOutUser } from "../../utils/firebase/firebase.utils";
 
-// import logo from '../../assets/ajb.png';
-import logo from '../../assets/logo.svg';
+import logo from '../../assets/ajb.png';
+//import logo from '../../assets/logo.svg';
 import {
     NavigationContainer,
     NavLink,
