@@ -3,8 +3,9 @@ import { Route, Routes } from "react-router-dom";
 
 import { UserContext } from "./contexts/user.context";
 import Navigation from "./routes/navigation/navigation.component";
-import Authentication from "./routes/authentication/authenticationcomponent";
+import Authentication from "./routes/authentication/authentication.component";
 import HomePage from "./routes/home/home.component";
+import Help from "./routes/help/help.component";
 
 const Config = () => {
   return(
@@ -14,13 +15,6 @@ const Config = () => {
   );
 }
 
-const Help = () => {
-  return(
-    <div>
-      <h1>Help Page</h1>
-    </div>
-  );
-}
 
 
 const App = () => {
