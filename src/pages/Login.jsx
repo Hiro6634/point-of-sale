@@ -9,14 +9,14 @@ import { toast } from 'react-toastify';
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
     const handleShowPassword = () =>{
         setShowPassword(!showPassword);
     };
 
-    const handleSubmit = (event) =>{
+    const handleSubmit = (event) => {
         event.preventDefault();
 
         if([email, password].includes("")){
@@ -25,6 +25,7 @@ const Login = () => {
             });
             return;
         }
+ 
         if(password.length < 6){
             toast.error("El password debe contener al menos 6 caracteres",{
                 theme:"dark"
