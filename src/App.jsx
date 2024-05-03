@@ -1,6 +1,8 @@
-import { useState } from 'react'
-import { Route, Routes } from 'react-router-dom'
-import Navbar from './components/Navbar'
+import { Route, Routes } from 'react-router-dom';
+
+import AppLayout from './layouts/AppLayout';
+import Login from './pages/Login';
+
 const Home = () => {
   return (
     <div>
@@ -9,18 +11,14 @@ const Home = () => {
   )
 }
 
-const App = () => {
-  const [count, setCount] = useState(0)
 
+const App = () => {
   return (
-    <>
-      <Navbar />
       <Routes>
-        <Route path='/' element={<Home />}/>
-        <Route path='/help' element={<div><h1>Ayuda</h1></div>} />
-        <Route path='/auth' element={<div><h1>Auth</h1></div>} />
+        <Route path='/' element={<AppLayout />}>
+          <Route index element={<Login />} />
+        </Route>
       </Routes> 
-    </> 
   )
 }
 
