@@ -5,8 +5,15 @@ import { initializeApp } from "firebase/app";
 // https://firebase.google.com/docs/web/setup#available-libraries
 import {
   GoogleAuthProvider,
-  getAuth
+  getAuth,
+  onAuthStateChanged
 } from 'firebase/auth';
+
+import {
+  doc,
+  getDoc,
+  setDoc
+} from 'firebase/firestore';
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -29,3 +36,32 @@ provider.setCustomParameters({
 });
 
 export const auth = getAuth();
+
+export const onAuthStateChangedListener = (callback) => 
+  onAuthStateChanged(auth, callback);
+
+export const createUserDocumentFromAuth = async(userAuth) => {
+  const userDocRef = doc(db, 'users', userAuth.uid);
+
+  const userSnapshot = await getDoc(userDocRef);
+
+  if(!userSnapshot.exists()){
+      var {displayName, email} = userAuth;
+      const createAt = new Date();
+      try{
+          if( displayName == null ){
+              displayName = email.split("@")[0];
+          }
+          
+          await setDoc(userDocRef, {
+              displayName,
+              email,
+              createAt
+          });
+      }catch(error){
+          console.log('error creating the user ', error.message);
+      }
+  }
+
+  return userDocRef;
+}
