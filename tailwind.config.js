@@ -9,3 +9,7 @@ export default {
   plugins: [],
 }
 
+/* cyan: '#22D3EE',
+yellow: '#FACC15',
+silver: '#A1A1AA'
+ */

@@ -1,10 +1,18 @@
-import { createContext, useEffect } from "react";
+import { createContext, useEffect, useReducer } from "react";
+import {
+    onProductsChangedListener
+} from "../utils/firebase/firebase.utils";
+import { createAction } from "../utils/reducer.utils";
 
-export const ProductContext = createContext({
+export const ProductsContext = createContext({
     products: []
 });
 
-const PRODUCT_ACTION_TYPES = {
+const INITIAL_STATE = {
+    products:[]
+}
+
+const PRODUCTS_ACTION_TYPES = {
     SET_PRODUCTS: 'SET_PRODUCTS',
 }
 
@@ -15,7 +23,7 @@ const INITAL_STATE = {
 const productReducer = (state, action) => {
     const { type, payload } = action;
     switch(type){
-        case PRODUCT_ACTION_TYPES.SET_PRODUCTS:
+        case PRODUCTS_ACTION_TYPES.SET_PRODUCTS:
             return {
                 ...state,
                 products: payload
@@ -25,8 +33,27 @@ const productReducer = (state, action) => {
     }
 }
 
-useEffect(()=>{
-    const productsMap = [{
-        id: 1
-    }];
-}, []);
+
+export const ProductsProvider = ({children}) => {
+    const [state, dispatch] = useReducer(productReducer, INITIAL_STATE);
+
+    const setProducts = (products) => {
+        dispatch(createAction(PRODUCTS_ACTION_TYPES.SET_PRODUCTS, products));
+    }
+
+
+    useEffect(()=>{
+        onProductsChangedListener((productsMap)=>{
+            setProducts(productsMap);
+        });
+    }, []);
+
+    const value = {
+        products: state.products,
+        setProducts
+    };
+
+    return (
+        <ProductsContext.Provider value={value}>{children}</ProductsContext.Provider>
+    )
+}

@@ -7,16 +7,24 @@ import {
 } from "react-icons/hi";
 import { toast } from 'react-toastify';
 
+import { useContext } from "react";
+import { UserContext } from "../context/user.context";
+import { getUserDocumentFromUid, signInAuthUserWithEmailAndPassword } from '../utils/firebase/firebase.utils';
+
+
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const {
+        setCurrentUser
+    } = useContext(UserContext);
 
     const handleShowPassword = () =>{
         setShowPassword(!showPassword);
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         if([email, password].includes("")){
@@ -32,9 +40,25 @@ const Login = () => {
             });
             return;
         }
-        
-        console.log("Login exitoso!");
-        return;
+       try{
+            console.log("HHHH");
+            const res = await signInAuthUserWithEmailAndPassword( email, password);
+            console.log('RESULT:', res.user.uid);
+            const myUser = await getUserDocumentFromUid(res.user.uid);
+            console.log("MY_USER", JSON.stringify(myUser));
+            setCurrentUser(myUser);
+       } catch (error){
+            switch(error.code){
+                case 'auth/wrong-password':
+                case 'auth/user-not-found':
+                    alert('incorrect email or password');
+                    break;
+                default:
+                    console.log(error);
+            }
+       }
+       console.log("Exit");
+       return;
     }
 
     return(
