@@ -74,6 +74,7 @@ const Login = () => {
                         className="w-full border border-gray-200 outline-none py-2 px-7 rounded-lg"
                         placeholder="Correo electrónico"
                         value = {email}
+                        autoComplete="username"
                         onChange={(event)=>setEmail(event.target.value)}
                     />
                 </div>
@@ -84,6 +85,7 @@ const Login = () => {
                         className="w-full border border-gray-200 outline-none py-2 px-7 rounded-lg"
                         placeholder="Contraseña"
                         value = {password}
+                        autoComplete="current-password"
                         onChange={(event)=>setPassword(event.target.value)}
                     />
                     {showPassword?(

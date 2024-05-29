@@ -4,7 +4,11 @@ export default {
     "./index.html",
     "./src/**/*.{html, js,jsx,ts,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily:{
+        'open-sans-condensed': ['"Open Sans Condensed"','sans-serif'],
+      },
+    },
   },
   plugins: [],
 }

@@ -9,9 +9,8 @@ const Navbar = () => {
         <nav className='bg-black p-4 text-white flex justify-between'>
             <Link to="/">Home</Link>
             <ul className='flex space-x-4'>
-                <li>
-                    <NavLink to="/help">Ayuda</NavLink>
-                </li>
+                <li><NavLink to="/tickets">Tickets</NavLink></li>
+                <li><NavLink to="/help">Ayuda</NavLink></li>
                 <li>
                     { (currentUser != null ) ? (
                         <NavLink onClick={signOutUser}>Salir</NavLink>
