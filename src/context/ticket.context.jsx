@@ -25,8 +25,6 @@ const ticketReducer = (state, action) => {
 }
 
 const addTicket = (tickets, ticketToAdd) => {
-    console.log("TICKETS", tickets);
-    console.log("TICKET2ADD", ticketToAdd);
         return [...tickets, ticketToAdd];
 }
 
@@ -34,12 +32,10 @@ export const TicketProvider = ({children}) => {
     const [state, dispatch] = useReducer(ticketReducer, INITIAL_STATE);
 
     const pushTicket = (ticket) => {
-        console.log("PUSHTICKET TICKET", ticket);
         dispatch(createAction(TICKET_ACTION_TYPES.ADD_TICKET, ticket));
     }
     
     const buildTicket = (cart, total) => {
-        console.log("BUILDTICKET ", cart);
         //TODO: Ver como es el tema de concurrencia
         const currentDate = new Date();
         const year = currentDate.getFullYear();
@@ -52,7 +48,6 @@ export const TicketProvider = ({children}) => {
 
         const items = cart.map((product, index) => {
             const id = `${year}${month}${day}${hour}${minutes}${seconds}${miliseconds}${String(index).padStart(4,'0')}`;
-            console.log("BUILDTICKET ", product);
             return {
                 id: id,
                 name: product.name,
@@ -65,7 +60,6 @@ export const TicketProvider = ({children}) => {
             items:items,
             total:total
         }
-        console.log("BUILDTICKET TICKET", ticket);
 
         return ticket;
     }

@@ -15,15 +15,12 @@ const Cart = () => {
     } = useContext(TicketContext);
 
     const handleCloseCart = () => {
-        console.log("FINALIZAR");
-    
         pushTicket(buildTicket(cart, total));
    
         clearCart();
     }
 
     const handleCancelCart = () => {
-        console.log("CANCELAR");
         clearCart();
     }
 
