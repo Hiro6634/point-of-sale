@@ -22,16 +22,19 @@ import {
   setDoc
 } from 'firebase/firestore';
 
+import config from './../config.json';
+
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+//console.log("FIREBAS_API_KEY:", process.env.REACT_APP_FIREBASE_API_KEY);
 const firebaseConfig = {
-  apiKey: "AIzaSyAX-qkALEtk-Vxdd-4bwU5gXundlcwFGwk",
+  apiKey: config.FIREBASE_API_KEY,
   authDomain: "pointofsale-ae0fd.firebaseapp.com",
   projectId: "pointofsale-ae0fd",
   storageBucket: "pointofsale-ae0fd.appspot.com",
-  messagingSenderId: "855078399227",
-  appId: "1:855078399227:web:e39ec1b4b5c176f554145e",
-  measurementId: "G-05F4732EMR"
+  messagingSenderId: config.FIREBASE_MESSAGING_SENDER_ID,
+  appId: config.FIREBASE_APP_ID,
+  measurementId: config.FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
@@ -149,4 +152,22 @@ export const onProductsChangedListener = (callback) => {
   onSnapshot( productsRef, async(querySnapshot) =>{
     callback( await getProductsSortByCategory(querySnapshot));
   });
+}
+
+const getCurrentDateTime = () => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2,'0'); 
+  const day = String(date.getDay() + 1).padStart(2,'0');
+  const hours = String(date.getHours() + 1).padStart(2,'0');
+  const minutes = String(date.getMinutes() + 1).padStart(2,'0');
+  const seconds = String(date.getSeconds() + 1).padStart(2,'0');
+  const mseconds = String(date.getMilliseconds() + 1).padStart(3,'0');  
+  return `${year}${month}${day}${hours}${minutes}${seconds}${mseconds}`
+}
+export const sendTicket = async (ticket) => {
+  const environment = config.FIREBASE_ENVIRONMENT;
+  const id = `${getCurrentDateTime()}_${Math.random().toString(36).substring(2,9)}`;
+  const ticketRef = doc(db, `env/${environment}/tickets/${id}`);
+  await setDoc(ticketRef, ticket);
 }

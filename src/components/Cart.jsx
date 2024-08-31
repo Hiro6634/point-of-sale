@@ -6,7 +6,8 @@ const Cart = () => {
     const {
         cart, 
         total,
-        clearCart
+        clearCart,
+        closeCart
     } = useContext(CartContext);
 
     const{ 
@@ -15,9 +16,8 @@ const Cart = () => {
     } = useContext(TicketContext);
 
     const handleCloseCart = () => {
-        pushTicket(buildTicket(cart, total));
-   
-        clearCart();
+        console.log("CLOSE_CART", cart);
+        closeCart();
     }
 
     const handleCancelCart = () => {

@@ -21,8 +21,7 @@ const Tickets = () => {
                                     <span className='px-2'>${stotal}</span>
                                 </div>
                             );
-                        })
-                        }
+                        })}
                         <h3>Total:${total}</h3>
                         <hr/>
                     </div>

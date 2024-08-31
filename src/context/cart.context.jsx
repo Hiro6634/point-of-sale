@@ -1,4 +1,5 @@
-import React, { createContext, useEffect, useReducer } from "react";
+import React, { createContext, useEffect, useReducer, useState } from "react";
+import { sendTicket } from "../utils/firebase/firebase.utils";
 import { createAction } from "../utils/reducer.utils";
 
 export const CartContext = createContext({
@@ -7,6 +8,8 @@ export const CartContext = createContext({
     total: 0
 });
 
+const [isCartClosed, setIsCartClosed] = useState(false);
+
 const CART_ACTION_TYPES = {
     ADD_PRODUCT_TO_CART: 'ADD_PRODUCT_TO_CART',
     CLEAR_PRODUCT_FROM_CART: 'CLEAR_PRODUCT_FROM_CART',
@@ -14,6 +17,7 @@ const CART_ACTION_TYPES = {
     SHOW_CART: 'SHOW_CART',
     HIDE_CART: 'HIDE_CART',
     UPDATE_TOTAL: 'UPDATE_TOTAL',
+    CLOSE_CART: 'CLOSE_CART'
 }
 
 const INITIAL_STATE = {
@@ -59,6 +63,12 @@ const cartReducer = (state, action) => {
                     ...state,
                     total: payload
                 }
+            case CART_ACTION_TYPES.CLOSE_CART:
+                return{
+                    ...state,
+                    cart: closingCart(state.cart),
+                    hide: true
+                }
             default: 
                 throw new Error(`unhandled type of ${type} in cartReducer`);
     }
@@ -84,6 +94,28 @@ const clearItemFromCart = (cartItems, cartItemToRemove) => {
     const filterCart =  cartItems.filter(cartItem => cartItem.id !== cartItemToRemove.id);
 
     return filterCart;
+}
+
+const closingCart = (cart) => {
+    if( !isCartClosed){
+        setIsCartClosed(true);
+        console.log("CLOSING_CART", cart);
+        const items = cart.map((item)=>{
+            return {
+                id: item.id,
+                name: item.name,
+                quantity: item.quantity
+            }
+        });
+        const total = cart.reduce((acc, item) => acc + (item.quantity * item.price), 0);
+        const ticket = {
+            items,
+            total
+        }
+        sendTicket(ticket);
+        return [];
+        
+    }
 }
 
 export const CartProvider = ({children}) => {
@@ -130,6 +162,12 @@ export const CartProvider = ({children}) => {
         const findedItem = state.cart.filter(item=>item.id===id);
         return findedItem[0]?findedItem[0].quantity:0;
     }
+
+    const closeCart = () => {
+        console.log("DISPATCH CLOSING_CART", state.cart);
+        dispatch(createAction(CART_ACTION_TYPES.CLOSE_CART, null));
+    }
+
     const value = {
         cart: state.cart,
         hide: state.hide,
@@ -139,7 +177,8 @@ export const CartProvider = ({children}) => {
         clearCart,
         showCart,
         hideCart,
-        getItemQuantity
+        getItemQuantity,
+        closeCart
     };
 
     return (
