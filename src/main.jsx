@@ -13,7 +13,7 @@ import './index.css';
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  <>
     <BrowserRouter>
       <UserProvider>
         <ProductsProvider>
@@ -26,5 +26,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       </UserProvider>
     </BrowserRouter>
     <ToastContainer />
-  </React.StrictMode>,
+  </>,
 )
