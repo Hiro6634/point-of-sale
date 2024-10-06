@@ -104,7 +104,7 @@ export const  signInAuthUserWithEmailAndPassword = async (email, password) => {
 export const signOutUser = async () => await signOut(auth);
 
 export const getCategories = async ()  => {
-  const categoriesRef = collection(db, 'categories');
+  const categoriesRef = collection(db, `env/${config.FIREBASE_ENVIRONMENT}/categories`);
   const q = query(categoriesRef);
 
   const querySnapshot = await getDocs(q);
@@ -139,7 +139,8 @@ const getProductsSortByCategory = async (querySnapshot) => {
 }
 
 export const getProductsOrdererByCategory = async () => {
-  const productsRef = collection( db, 'products');
+  //const productsRef = collection( db, 'products');
+  const productsRef = collection( db, `env/${config.FIREBASE_ENVIRONMENT}/products`); //collection( db, 'products');
   const q = query(productsRef);
   const querySnapshot = await getDocs(q);
 
@@ -147,7 +148,7 @@ export const getProductsOrdererByCategory = async () => {
 }
 
 export const onProductsChangedListener = (callback) => {
-  const productsRef = collection( db, 'products');
+  const productsRef = collection( db,  `env/${config.FIREBASE_ENVIRONMENT}/products`); //collection( db, 'products');
 
   onSnapshot( productsRef, async(querySnapshot) =>{
     callback( await getProductsSortByCategory(querySnapshot));
