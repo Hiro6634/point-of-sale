@@ -1,0 +1,17 @@
+<svg width="110.00000000000006" height="110.00000000000003" xmlns="http://www.w3.org/2000/svg">
+ <g stroke-width="3" stroke="blue">
+  <title>Layer 2</title>
+  <ellipse fill="#0000FF" stroke="blue" cx="55" cy="55" id="svg_1" rx="53" ry="53" opacity="0"/>
+  <g id="Escudo" fill="#0000FF">
+   <path stroke="blue" id="arcoizq" d="m10.5,26q25,15 44.5,-8" fill="transparent"/>
+   <path stroke="blue" id="arcoder" d="m99.5,26q-25,15 -44.5,-8" fill="transparent"/>
+   <path stroke="blue" id="arcoizqdown" d="m10.5,26q6,70 44.5,82" fill="transparent"/>
+   <path stroke="blue" id="arcoderdown" d="m99.5,26q-6,70 -44.5,82" fill="transparent"/>
+  </g>
+  <g id="Texto"/>
+  <text fill="#000000" x="32.99091" y="70.64068" id="svg_2" stroke-width="0" font-size="60" font-family="'EB Garamond'" text-anchor="start" xml:space="preserve" font-weight="bold" stroke="blue" transform="matrix(0.600272 0 0 1.06908 6.65812 2.29794)">A</text>
+  <text fill="#000000" x="121.51808" y="70.36574" id="svg_3" stroke-width="0" font-size="60" font-family="'EB Garamond'" text-anchor="start" xml:space="preserve" font-weight="bold" stroke="blue" transform="matrix(0.71286 0 0 1.10641 -23.4899 -0.599807)">B</text>
+  <text fill="#000000" x="91.28893" y="67.98286" id="svg_4" stroke-width="0" font-size="60" font-family="'EB Garamond'" text-anchor="start" xml:space="preserve" font-weight="bold" stroke="blue" transform="matrix(0.544444 0 0 1.17469 1.23363 -0.86163)">J</text>
+ </g>
+
+</svg>

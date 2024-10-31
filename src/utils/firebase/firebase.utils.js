@@ -166,8 +166,10 @@ const getCurrentDateTime = () => {
   return `${year}${month}${day}${hours}${minutes}${seconds}${mseconds}`
 }
 export const sendTicket = async (ticket) => {
+  console.log("TICKET:", ticket);
   const environment = config.FIREBASE_ENVIRONMENT;
   const id = `${getCurrentDateTime()}_${Math.random().toString(36).substring(2,9)}`;
+  console.log("ID:", id);
   const ticketRef = doc(db, `env/${environment}/tickets/${id}`);
   await setDoc(ticketRef, ticket);
 }

@@ -1,4 +1,5 @@
 import React, { createContext, useEffect, useReducer } from "react";
+import { sendTicket } from "../utils/firebase/firebase.utils";
 import { createAction } from "../utils/reducer.utils";
 
 export const CartContext = createContext({
@@ -96,41 +97,37 @@ const clearItemFromCart = (cartItems, cartItemToRemove) => {
 }
 
 const closingCart = (cart) => {
-    /*    if( !isCartClosed){
-            setIsCartClosed(true);
-            console.log("CLOSING_CART", cart);
-            const items = cart.map((item)=>{
-                return {
-                    id: item.id,
-                    name: item.name,
-                    quantity: item.quantity
-                }
-            });
-            const total = cart.reduce((acc, item) => acc + (item.quantity * item.price), 0);
-            const ticket = {
-                items,
-                total
-            }
-            sendTicket(ticket);
-            return [];
-            
-        }*/
+    console.log("CLOSING_CART", cart);
+    const items = cart.map((item) => {
+        return {
+            id: item.id,
+            name: item.name,
+            quantity: item.quantity
+        }
+    });
+    const total = cart.reduce((acc, item) => acc + (item.quantity * item.price), 0);
+    const ticket = {
+        items,
+        total
+    }
+    sendTicket(ticket);
+    return [];
 }
 
 export const CartProvider = ({ children }) => {
     const [state, dispatch] = useReducer(cartReducer, INITIAL_STATE);
 
     useEffect(() => {
-        /*        const cart = state.cart;
-                if (cart.length === 0) {
-                    dispatch(createAction(CART_ACTION_TYPES.HIDE_CART, null));
-                    updateTotal(0);
-                } else {
-                    const total = cart.reduce((acc, item) => acc + (item.quantity * item.price), 0);
-                    updateTotal(total);
-                }
-        
-        */
+        const cart = state.cart;
+        if (cart.length === 0) {
+            dispatch(createAction(CART_ACTION_TYPES.HIDE_CART, null));
+            updateTotal(0);
+        } else {
+            const total = cart.reduce((acc, item) => acc + (item.quantity * item.price), 0);
+            updateTotal(total);
+        }
+
+
     }, [state.cart]);
 
     const addProductToCart = (product) => {
