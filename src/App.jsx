@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import CloseAccount from './components/CloseAccount.jsx'
+import LoginForm from './components/LoginForm.jsx'
 import Settings from './components/Settings.jsx'
 import { DEFAULT_TERMINAL_ID, STORAGE_KEYS } from './config.js'
 import { useLocalStorage } from './hooks/useLocalStorage.js'
@@ -28,6 +29,10 @@ function App() {
     DEFAULT_TERMINAL_ID,
   )
   const [closingPayload, setClosingPayload] = useState(null)
+  const [currentUser, setCurrentUser] = useLocalStorage(
+    STORAGE_KEYS.currentUser,
+    null,
+  )
 
   const total = sales.reduce((sum, sale) => sum + sale.price * sale.qty, 0)
 
@@ -38,6 +43,20 @@ function App() {
   function handleClosingDone() {
     setClosingPayload(null)
     setSales([])
+  }
+
+  function handleSignIn(email) {
+    setCurrentUser(email)
+    setView('pos')
+  }
+
+  function handleSignOut() {
+    setCurrentUser(null)
+    setView('pos')
+  }
+
+  if (!currentUser) {
+    return <LoginForm onSignIn={handleSignIn} />
   }
 
   if (view === 'settings') {
@@ -61,6 +80,13 @@ function App() {
           <span className="terminal-chip" title="Terminal activo">
             Terminal: {terminalId}
           </span>
+          <button
+            type="button"
+            className="button secondary"
+            onClick={handleSignOut}
+          >
+            Salir
+          </button>
           <button
             type="button"
             className="button icon-button"
