@@ -45,8 +45,10 @@ function App() {
     setSales([])
   }
 
-  function handleSignIn(email) {
+  function handleSignIn(userOrEmail) {
+    const email = typeof userOrEmail === 'string' ? userOrEmail : userOrEmail.email
     setCurrentUser(email)
+    setOpenAccountModal(false)
     setView('pos')
   }
 

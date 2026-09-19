@@ -1,10 +1,13 @@
 import { useState } from 'react'
+import { signInAuthUserWithEmailAndPassword } from '../firebase/firebase.utils.js'
+import { AUTH_ERROR_MESSAGES } from '../lib/auth-errors.js'
 import FormInput from './form-input/FormInput.jsx'
 
 const MIN_PASSWORD_LENGTH = 6
 
 export default function LoginForm({ onSignIn }) {
   const [credentials, setCredentials] = useState({ email: '', password: '' })
+  const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
 
   function handleChange(event) {
@@ -13,7 +16,7 @@ export default function LoginForm({ onSignIn }) {
     if (error) setError(null)
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
     const email = credentials.email.trim()
     const password = credentials.password
@@ -27,7 +30,18 @@ export default function LoginForm({ onSignIn }) {
       return
     }
 
-    onSignIn(email)
+    setSubmitting(true)
+    try {
+      const user = await signInAuthUserWithEmailAndPassword({ email, password })
+      onSignIn(user)
+    } catch (firebaseError) {
+      setError(
+        AUTH_ERROR_MESSAGES[firebaseError.code] ??
+          'No se pudo iniciar sesión. Intentalo de nuevo.'
+      )
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -53,8 +67,9 @@ export default function LoginForm({ onSignIn }) {
             autoComplete="current-password"
             required
           />
-          {error && <p className="login-error">{error}</p>}
-          <button type="submit" className="login-button">
+          {error && <p className="login-error" role="alert">{error}</p>}
+          {submitting && <p className="login-submitting">Verificando…</p>}
+          <button type="submit" className="login-button" disabled={submitting}>
             Ingresar
           </button>
         </form>
