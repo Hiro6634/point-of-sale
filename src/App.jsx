@@ -1,15 +1,19 @@
-import { useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import CloseAccount from './components/CloseAccount.jsx'
 import LoginForm from './components/LoginForm.jsx'
 import Settings from './components/Settings.jsx'
 import { DEFAULT_TERMINAL_ID, STORAGE_KEYS } from './config.js'
+import {
+  signOutAuthUser,
+  subscribeToAuthStateChange,
+} from './firebase/firebase.utils.js'
 import { useLocalStorage } from './hooks/useLocalStorage.js'
 import { buildClosePayload } from './lib/closing.js'
 import './App.css'
 
 const INITIAL_SALES = [
-  { id: 1, name: 'Café', price: 1200, qty: 2 },
-  { id: 2, name: 'Sándwich', price: 2500, qty: 1 },
+  { id: 1, name: 'CafÃ©', price: 1200, qty: 2 },
+  { id: 2, name: 'SÃ¡ndwich', price: 2500, qty: 1 },
   { id: 3, name: 'Jugo natural', price: 1800, qty: 3 },
 ]
 
@@ -36,6 +40,13 @@ function App() {
 
   const total = sales.reduce((sum, sale) => sum + sale.price * sale.qty, 0)
 
+  useEffect(() => {
+    return subscribeToAuthStateChange((user) => {
+      setCurrentUser(user ? user.email : null)
+      setView('pos')
+    })
+  }, [setCurrentUser])
+
   function handleCloseAccount() {
     setClosingPayload(buildClosePayload({ terminalId, items: sales, total }))
   }
@@ -52,9 +63,15 @@ function App() {
     setView('pos')
   }
 
-  function handleSignOut() {
-    setCurrentUser(null)
-    setView('pos')
+  async function handleSignOut() {
+    try {
+      await signOutAuthUser()
+    } catch {
+      // Si Firebase no responde, igual limpiamos la sesión local
+    } finally {
+      setCurrentUser(null)
+      setView('pos')
+    }
   }
 
   if (!currentUser) {
@@ -102,13 +119,13 @@ function App() {
       </header>
 
       <main className="sales-view">
-        <h2>Ventas del día</h2>
+        <h2>Ventas del dÃ­a</h2>
         <ul className="sales-list">
           {sales.map((sale) => (
             <li key={sale.id} className="sale-row">
               <span className="sale-name">{sale.name}</span>
               <span className="sale-qty">
-                {sale.qty} × {sale.price}
+                {sale.qty} Ã— {sale.price}
               </span>
               <span className="sale-amount">{sale.price * sale.qty}</span>
             </li>
