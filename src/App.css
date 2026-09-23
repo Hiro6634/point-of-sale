@@ -216,6 +216,14 @@
   }
 }
 
+.settings-footer {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text);
+}
+
 .hint {
   font-size: 14px;
   color: var(--text);
