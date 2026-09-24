@@ -3,6 +3,7 @@ import CloseAccount from './components/CloseAccount.jsx'
 import LoginForm from './components/LoginForm.jsx'
 import Settings from './components/Settings.jsx'
 import { DEFAULT_TERMINAL_ID, STORAGE_KEYS } from './config.js'
+import { subscribeToCatalogProducts } from './firebase/catalog.js'
 import {
   signOutAuthUser,
   subscribeToAuthStateChange,
@@ -10,12 +11,6 @@ import {
 import { useLocalStorage } from './hooks/useLocalStorage.js'
 import { buildClosePayload } from './lib/closing.js'
 import './App.css'
-
-const INITIAL_SALES = [
-  { id: 1, name: 'CafÃ©', price: 1200, qty: 2 },
-  { id: 2, name: 'SÃ¡ndwich', price: 2500, qty: 1 },
-  { id: 3, name: 'Jugo natural', price: 1800, qty: 3 },
-]
 
 function GearIcon() {
   return (
@@ -27,7 +22,7 @@ function GearIcon() {
 
 function App() {
   const [view, setView] = useState('pos')
-  const [sales, setSales] = useState(INITIAL_SALES)
+  const [sales, setSales] = useState([])
   const [terminalId, setTerminalId] = useLocalStorage(
     STORAGE_KEYS.terminalId,
     DEFAULT_TERMINAL_ID,
@@ -46,6 +41,11 @@ function App() {
       setView('pos')
     })
   }, [setCurrentUser])
+
+  useEffect(() => {
+    if (!currentUser) return undefined
+    return subscribeToCatalogProducts((products) => setSales(products))
+  }, [currentUser])
 
   function handleCloseAccount() {
     setClosingPayload(buildClosePayload({ terminalId, items: sales, total }))
