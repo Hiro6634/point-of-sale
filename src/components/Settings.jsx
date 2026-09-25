@@ -37,6 +37,8 @@ export default function Settings({ terminalId, onSave, onBack }) {
           Guardar
         </button>
       </form>
+
+      <footer className="settings-footer">Versión {__APP_VERSION__}</footer>
     </section>
   )
 }

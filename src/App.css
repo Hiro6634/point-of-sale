@@ -11,12 +11,11 @@
   gap: 16px;
   padding: 16px 24px;
   border-bottom: 1px solid var(--border);
+}
 
-  h1 {
-    margin: 0;
-    font-size: 20px;
-    letter-spacing: -0.4px;
-  }
+.topbar-logo {
+  width: 28px;
+  height: 28px;
 }
 
 .topbar-actions {
@@ -101,33 +100,63 @@
   }
 }
 
-.sales-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.catalog {
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
 }
 
-.sale-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border);
+.catalog-table {
+  border-collapse: collapse;
+  width: 100%;
+  text-align: right;
 
-  &:last-child {
-    border-bottom: none;
+  th,
+  td {
+    padding: 12px 18px;
+  }
+
+  thead th {
+    background: var(--code-bg);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  thead th:first-child {
+    text-align: left;
+    width: 1%;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+
+    &:last-child {
+      border-bottom: none;
+    }
   }
 }
 
 .sale-name {
   color: var(--text-h);
   font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+.sale-price,
+.sale-qty,
+.sale-amount {
+  white-space: nowrap;
+}
+
+.sale-price,
 .sale-qty {
   color: var(--text);
   font-family: var(--mono);
@@ -138,6 +167,43 @@
   font-family: var(--mono);
   font-weight: 700;
   color: var(--text-h);
+}
+
+.sale-action {
+  text-align: right;
+
+  .remove-button {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    color: var(--danger);
+    background: var(--danger-bg);
+    border-color: var(--danger-border);
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    padding: 12px 16px;
+  }
+
+  .sales-view {
+    padding: 16px;
+  }
+
+  .catalog-table {
+    table-layout: fixed;
+
+    th,
+    td {
+      padding: 10px 8px;
+    }
+
+    thead th:first-child,
+    tbody td:first-child {
+      width: 42%;
+    }
+  }
 }
 
 .empty {
@@ -214,6 +280,14 @@
   button {
     align-self: flex-start;
   }
+}
+
+.settings-footer {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text);
 }
 
 .hint {
