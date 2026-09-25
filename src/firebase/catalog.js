@@ -4,7 +4,7 @@ import { db } from './firebase.utils.js'
 
 const productsCollection = collection(db, CATALOG_PRODUCTS_PATH)
 
-export function subscribeToCatalogProducts(callback) {
+export function subscribeToCatalogProducts({ onProducts, onError }) {
   return onSnapshot(
     productsCollection,
     (snapshot) => {
@@ -17,10 +17,11 @@ export function subscribeToCatalogProducts(callback) {
           qty: data.qty ?? 1,
         }
       })
-      callback(products)
+      onProducts(products)
     },
     (error) => {
       console.error('Error leyendo el catálogo', error)
+      onError(error)
     },
   )
 }

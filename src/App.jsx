@@ -1,13 +1,17 @@
 ﻿import { useEffect, useState } from 'react'
+import CatalogState from './components/CatalogState.jsx'
 import CloseAccount from './components/CloseAccount.jsx'
 import LoginForm from './components/LoginForm.jsx'
 import Settings from './components/Settings.jsx'
 import { DEFAULT_TERMINAL_ID, STORAGE_KEYS } from './config.js'
-import { subscribeToCatalogProducts } from './firebase/catalog.js'
 import {
   signOutAuthUser,
   subscribeToAuthStateChange,
 } from './firebase/firebase.utils.js'
+import {
+  CATALOG_STATUS,
+  useCatalogSubscription,
+} from './hooks/useCatalogSubscription.js'
 import { useLocalStorage } from './hooks/useLocalStorage.js'
 import { buildClosePayload } from './lib/closing.js'
 import viteLogo from './assets/vite.svg'
@@ -42,7 +46,13 @@ function App() {
     null,
   )
 
+  const { status, errorMessage, retry } = useCatalogSubscription({
+    enabled: Boolean(currentUser),
+    onProducts: setSales,
+  })
+
   const total = sales.reduce((sum, sale) => sum + sale.price * sale.qty, 0)
+  const isCatalogReady = status === CATALOG_STATUS.READY
 
   useEffect(() => {
     return subscribeToAuthStateChange((user) => {
@@ -50,11 +60,6 @@ function App() {
       setView('pos')
     })
   }, [setCurrentUser])
-
-  useEffect(() => {
-    if (!currentUser) return undefined
-    return subscribeToCatalogProducts((products) => setSales(products))
-  }, [currentUser])
 
   function handleRemoveSale(id) {
     setSales((current) => current.filter((sale) => sale.id !== id))
@@ -72,7 +77,6 @@ function App() {
   function handleSignIn(userOrEmail) {
     const email = typeof userOrEmail === 'string' ? userOrEmail : userOrEmail.email
     setCurrentUser(email)
-    setOpenAccountModal(false)
     setView('pos')
   }
 
@@ -138,52 +142,59 @@ function App() {
 
       <main className="sales-view">
         <div className="catalog">
-          <table className="catalog-table">
-            <thead>
-              <tr>
-                <th scope="col">Descripcion</th>
-                <th scope="col">Precio</th>
-                <th scope="col">Cant</th>
-                <th scope="col">S.Total</th>
-                <th scope="col" aria-label="Acciones" />
-              </tr>
-            </thead>
-            <tbody>
-              {sales.map((sale) => (
-                <tr key={sale.id}>
-                  <td className="sale-name">{sale.name}</td>
-                  <td className="sale-price">${sale.price}</td>
-                  <td className="sale-qty">{sale.qty}</td>
-                  <td className="sale-amount">${sale.price * sale.qty}</td>
-                  <td className="sale-action">
-                    <button
-                      type="button"
-                      className="button icon-button remove-button"
-                      aria-label={`Eliminar ${sale.name}`}
-                      title="Eliminar"
-                      onClick={() => handleRemoveSale(sale.id)}
-                    >
-                      <TrashIcon />
-                    </button>
-                  </td>
+          {isCatalogReady && sales.length > 0 && (
+            <table className="catalog-table">
+              <thead>
+                <tr>
+                  <th scope="col">Descripcion</th>
+                  <th scope="col">Precio</th>
+                  <th scope="col">Cant</th>
+                  <th scope="col">S.Total</th>
+                  <th scope="col" aria-label="Acciones" />
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {sales.map((sale) => (
+                  <tr key={sale.id}>
+                    <td className="sale-name">{sale.name}</td>
+                    <td className="sale-price">${sale.price}</td>
+                    <td className="sale-qty">{sale.qty}</td>
+                    <td className="sale-amount">${sale.price * sale.qty}</td>
+                    <td className="sale-action">
+                      <button
+                        type="button"
+                        className="button icon-button remove-button"
+                        aria-label={`Eliminar ${sale.name}`}
+                        title="Eliminar"
+                        onClick={() => handleRemoveSale(sale.id)}
+                      >
+                        <TrashIcon />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
 
-        {sales.length === 0 && <p className="empty">Sin ventas registradas.</p>}
+          <CatalogState
+            status={status}
+            errorMessage={errorMessage}
+            isEmpty={isCatalogReady && sales.length === 0}
+            onRetry={retry}
+          />
+        </div>
 
         <footer className="totals">
           <span>Total</span>
-          <strong>{total}</strong>
+          <strong>{isCatalogReady ? total : 0}</strong>
         </footer>
 
         <button
           type="button"
           className="button primary close-button"
           onClick={handleCloseAccount}
-          disabled={sales.length === 0}
+          disabled={!isCatalogReady || sales.length === 0}
         >
           Cerrar cuenta
         </button>
