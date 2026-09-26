@@ -1,0 +1,30 @@
+[build]
+  command = "pnpm run build"
+  publish = "dist"
+
+[build.environment]
+  # La "config web" de Firebase (apiKey, appId, projectId, etc.) es publica por
+  # diseno: viaja dentro del bundle que baja el navegador y no protege nada
+  # sensible. Lo que protege son las security rules de Firestore y los dominios
+  # autorizados. El scanner de Netlify la marca igual, asi que la exoneramos.
+  SECRETS_SCAN_OMIT_KEYS = "VITE_FIREBASE_API_KEY,VITE_FIREBASE_AUTH_DOMAIN,VITE_FIREBASE_PROJECT_ID,VITE_FIREBASE_STORAGE_BUCKET,VITE_FIREBASE_MESSAGING_SENDER_ID,VITE_FIREBASE_APP_ID,VITE_FIREBASE_MEASUREMENT_ID,VITE_CATALOG_ROOT"
+
+# Service worker: nunca cacheado, asi el navegador toma el cambio al publicar.
+# Si queda cacheado, el cliente queda clavado en una version vieja del bundle.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Netlify sirve primero los archivos reales del publish dir; este rewrite solo
+# entra para rutas que no existen (deep links de la SPA).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -27,3 +27,7 @@ dist-ssr
 .env
 .env.*.local
 
+# Artefactos de pruebas locales de PWA
+.subtest
+.smoke
+

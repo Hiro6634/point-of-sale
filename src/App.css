@@ -2,6 +2,11 @@
   display: flex;
   flex-direction: column;
   min-height: 100svh;
+  box-sizing: border-box;
+  /* Solo aplican cuando la app corre instalada y en pantalla completa, para que
+     el notch y la barrita de gestos no tapen el topbar ni el boton de cobro. */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .topbar {
@@ -405,6 +410,8 @@
   justify-content: center;
   min-height: 100svh;
   padding: 24px;
+  padding-top: calc(24px + env(safe-area-inset-top));
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
   box-sizing: border-box;
   background: linear-gradient(180deg, var(--bg), var(--code-bg));
 }
