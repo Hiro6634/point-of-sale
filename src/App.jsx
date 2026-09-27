@@ -3,6 +3,7 @@ import CatalogState from './components/CatalogState.jsx'
 import CloseAccount from './components/CloseAccount.jsx'
 import LoginForm from './components/LoginForm.jsx'
 import Settings from './components/Settings.jsx'
+import ThemeToggle from './components/ThemeToggle.jsx'
 import { DEFAULT_TERMINAL_ID, STORAGE_KEYS } from './config.js'
 import {
   signOutAuthUser,
@@ -13,7 +14,9 @@ import {
   useCatalogSubscription,
 } from './hooks/useCatalogSubscription.js'
 import { useLocalStorage } from './hooks/useLocalStorage.js'
+import { useTheme } from './hooks/useTheme.js'
 import { buildClosePayload } from './lib/closing.js'
+import { groupSalesByCategory } from './lib/group-sales.js'
 import viteLogo from './assets/vite.svg'
 import './App.css'
 
@@ -46,12 +49,15 @@ function App() {
     null,
   )
 
-  const { status, errorMessage, retry } = useCatalogSubscription({
+  const { status, errorMessage, categories, retry } = useCatalogSubscription({
     enabled: Boolean(currentUser),
     onProducts: setSales,
   })
 
+  const { theme, toggleTheme } = useTheme()
+
   const visibleSales = sales.filter((sale) => sale.enabled)
+  const groups = groupSalesByCategory(visibleSales, categories)
   const total = visibleSales.reduce((sum, sale) => sum + sale.price * sale.qty, 0)
   const isCatalogReady = status === CATALOG_STATUS.READY
 
@@ -131,6 +137,7 @@ function App() {
           >
             Salir
           </button>
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
           <button
             type="button"
             className="button icon-button"
@@ -157,25 +164,31 @@ function App() {
                 </tr>
               </thead>
               <tbody>
-                {visibleSales.map((sale) => (
-                  <tr key={sale.id}>
-                    <td className="sale-name">{sale.name}</td>
-                    <td className="sale-price">${sale.price}</td>
-                    <td className="sale-qty">{sale.qty}</td>
-                    <td className="sale-amount">${sale.price * sale.qty}</td>
-                    <td className="sale-action">
-                      <button
-                        type="button"
-                        className="button icon-button remove-button"
-                        aria-label={`Eliminar ${sale.name}`}
-                        title="Eliminar"
-                        onClick={() => handleRemoveSale(sale.id)}
-                      >
-                        <TrashIcon />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {groups.map((group) =>
+                  group.items.map((sale) => (
+                    <tr
+                      key={sale.id}
+                      className="sale-group"
+                      style={{ '--group-color': group.color }}
+                    >
+                      <td className="sale-name">{sale.name}</td>
+                      <td className="sale-price">${sale.price}</td>
+                      <td className="sale-qty">{sale.qty}</td>
+                      <td className="sale-amount">${sale.price * sale.qty}</td>
+                      <td className="sale-action">
+                        <button
+                          type="button"
+                          className="button icon-button remove-button"
+                          aria-label={`Eliminar ${sale.name}`}
+                          title="Eliminar"
+                          onClick={() => handleRemoveSale(sale.id)}
+                        >
+                          <TrashIcon />
+                        </button>
+                      </td>
+                    </tr>
+                  )),
+                )}
               </tbody>
             </table>
           )}
