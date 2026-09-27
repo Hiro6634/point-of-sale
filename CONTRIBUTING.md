@@ -48,7 +48,8 @@ Reglas que no se negocian:
 | `epic/`      | Agrupacion de HUs. `epic/POS-3-catalogo`                     |
 
 Numero de epic con padding consistente: `POS-1`, `POS-2`, `POS-3`, `POS-4`.
-Hoy conviven `POS-3-catalogo` y `POS-004-tickets-de-venta`.
+La epic de tickets se renombro de `POS-004-tickets-de-venta` a
+`POS-4-tickets-de-venta` para cerrar el padding.
 
 ## Trazabilidad epic <-> HU
 
