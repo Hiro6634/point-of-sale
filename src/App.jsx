@@ -3,6 +3,7 @@ import CatalogState from './components/CatalogState.jsx'
 import CloseAccount from './components/CloseAccount.jsx'
 import LoginForm from './components/LoginForm.jsx'
 import Settings from './components/Settings.jsx'
+import ThemeToggle from './components/ThemeToggle.jsx'
 import { DEFAULT_TERMINAL_ID, STORAGE_KEYS } from './config.js'
 import {
   signOutAuthUser,
@@ -13,7 +14,9 @@ import {
   useCatalogSubscription,
 } from './hooks/useCatalogSubscription.js'
 import { useLocalStorage } from './hooks/useLocalStorage.js'
+import { useTheme } from './hooks/useTheme.js'
 import { buildClosePayload } from './lib/closing.js'
+import { groupSalesByCategory } from './lib/group-sales.js'
 import viteLogo from './assets/vite.svg'
 import './App.css'
 
@@ -46,12 +49,16 @@ function App() {
     null,
   )
 
-  const { status, errorMessage, retry } = useCatalogSubscription({
+  const { status, errorMessage, categories, retry } = useCatalogSubscription({
     enabled: Boolean(currentUser),
     onProducts: setSales,
   })
 
-  const total = sales.reduce((sum, sale) => sum + sale.price * sale.qty, 0)
+  const { theme, toggleTheme } = useTheme()
+
+  const visibleSales = sales.filter((sale) => sale.enabled)
+  const groups = groupSalesByCategory(visibleSales, categories)
+  const total = visibleSales.reduce((sum, sale) => sum + sale.price * sale.qty, 0)
   const isCatalogReady = status === CATALOG_STATUS.READY
 
   useEffect(() => {
@@ -66,7 +73,9 @@ function App() {
   }
 
   function handleCloseAccount() {
-    setClosingPayload(buildClosePayload({ terminalId, items: sales, total }))
+    setClosingPayload(
+      buildClosePayload({ terminalId, items: visibleSales, total }),
+    )
   }
 
   function handleClosingDone() {
@@ -128,6 +137,7 @@ function App() {
           >
             Salir
           </button>
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
           <button
             type="button"
             className="button icon-button"
@@ -142,7 +152,7 @@ function App() {
 
       <main className="sales-view">
         <div className="catalog">
-          {isCatalogReady && sales.length > 0 && (
+          {isCatalogReady && visibleSales.length > 0 && (
             <table className="catalog-table">
               <thead>
                 <tr>
@@ -154,25 +164,31 @@ function App() {
                 </tr>
               </thead>
               <tbody>
-                {sales.map((sale) => (
-                  <tr key={sale.id}>
-                    <td className="sale-name">{sale.name}</td>
-                    <td className="sale-price">${sale.price}</td>
-                    <td className="sale-qty">{sale.qty}</td>
-                    <td className="sale-amount">${sale.price * sale.qty}</td>
-                    <td className="sale-action">
-                      <button
-                        type="button"
-                        className="button icon-button remove-button"
-                        aria-label={`Eliminar ${sale.name}`}
-                        title="Eliminar"
-                        onClick={() => handleRemoveSale(sale.id)}
-                      >
-                        <TrashIcon />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {groups.map((group) =>
+                  group.items.map((sale) => (
+                    <tr
+                      key={sale.id}
+                      className="sale-group"
+                      style={{ '--group-color': group.color }}
+                    >
+                      <td className="sale-name">{sale.name}</td>
+                      <td className="sale-price">${sale.price}</td>
+                      <td className="sale-qty">{sale.qty}</td>
+                      <td className="sale-amount">${sale.price * sale.qty}</td>
+                      <td className="sale-action">
+                        <button
+                          type="button"
+                          className="button icon-button remove-button"
+                          aria-label={`Eliminar ${sale.name}`}
+                          title="Eliminar"
+                          onClick={() => handleRemoveSale(sale.id)}
+                        >
+                          <TrashIcon />
+                        </button>
+                      </td>
+                    </tr>
+                  )),
+                )}
               </tbody>
             </table>
           )}
@@ -180,7 +196,8 @@ function App() {
           <CatalogState
             status={status}
             errorMessage={errorMessage}
-            isEmpty={isCatalogReady && sales.length === 0}
+            isEmpty={isCatalogReady && visibleSales.length === 0}
+            hasHiddenItems={sales.length > 0}
             onRetry={retry}
           />
         </div>
@@ -194,7 +211,7 @@ function App() {
           type="button"
           className="button primary close-button"
           onClick={handleCloseAccount}
-          disabled={!isCatalogReady || sales.length === 0}
+          disabled={!isCatalogReady || visibleSales.length === 0}
         >
           Cerrar cuenta
         </button>

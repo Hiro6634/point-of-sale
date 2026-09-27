@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
-import { subscribeToCatalogProducts } from '../firebase/catalog.js'
+import {
+  subscribeToCatalogCategories,
+  subscribeToCatalogProducts,
+} from '../firebase/catalog.js'
 import {
   CATALOG_ERROR_FALLBACK,
   CATALOG_ERROR_MESSAGES,
@@ -14,11 +17,21 @@ export const CATALOG_STATUS = {
 export function useCatalogSubscription({ enabled, onProducts }) {
   const [attempt, setAttempt] = useState(0)
   const [result, setResult] = useState(null)
+  const [categories, setCategories] = useState([])
 
   useEffect(() => {
     if (!enabled) return undefined
 
     let active = true
+
+    const unsubscribeCategories = subscribeToCatalogCategories({
+      onCategories: (next) => {
+        if (active) setCategories(next)
+      },
+      onError: () => {
+        if (active) setCategories([])
+      },
+    })
 
     const unsubscribe = subscribeToCatalogProducts({
       onProducts: (products) => {
@@ -40,6 +53,7 @@ export function useCatalogSubscription({ enabled, onProducts }) {
 
     return () => {
       active = false
+      unsubscribeCategories()
       unsubscribe()
     }
   }, [enabled, attempt, onProducts])
@@ -54,6 +68,7 @@ export function useCatalogSubscription({ enabled, onProducts }) {
   return {
     status: isPending ? CATALOG_STATUS.LOADING : result.status,
     errorMessage: isPending ? null : result.errorMessage,
+    categories,
     retry,
   }
 }
