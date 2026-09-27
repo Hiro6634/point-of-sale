@@ -146,6 +146,11 @@
   }
 }
 
+.sale-group {
+  --group-color: var(--border);
+  background: color-mix(in srgb, var(--group-color) 14%, var(--bg));
+}
+
 .sale-name {
   color: var(--text-h);
   font-weight: 500;
