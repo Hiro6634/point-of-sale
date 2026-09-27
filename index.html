@@ -12,6 +12,18 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="POS" />
     <title>Punto de Venta</title>
+    <script>
+      try {
+        var stored = JSON.parse(localStorage.getItem('pos:theme'))
+        document.documentElement.dataset.theme =
+          stored ??
+          (matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light')
+      } catch (error) {
+        document.documentElement.dataset.theme = 'light'
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
