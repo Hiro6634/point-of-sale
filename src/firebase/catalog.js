@@ -15,6 +15,7 @@ export function subscribeToCatalogProducts({ onProducts, onError }) {
           name: data.name,
           price: data.price,
           qty: data.qty ?? 1,
+          enabled: data.enabled ?? data.enable ?? true,
         }
       })
       onProducts(products)

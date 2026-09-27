@@ -51,7 +51,8 @@ function App() {
     onProducts: setSales,
   })
 
-  const total = sales.reduce((sum, sale) => sum + sale.price * sale.qty, 0)
+  const visibleSales = sales.filter((sale) => sale.enabled)
+  const total = visibleSales.reduce((sum, sale) => sum + sale.price * sale.qty, 0)
   const isCatalogReady = status === CATALOG_STATUS.READY
 
   useEffect(() => {
@@ -66,7 +67,9 @@ function App() {
   }
 
   function handleCloseAccount() {
-    setClosingPayload(buildClosePayload({ terminalId, items: sales, total }))
+    setClosingPayload(
+      buildClosePayload({ terminalId, items: visibleSales, total }),
+    )
   }
 
   function handleClosingDone() {
@@ -142,7 +145,7 @@ function App() {
 
       <main className="sales-view">
         <div className="catalog">
-          {isCatalogReady && sales.length > 0 && (
+          {isCatalogReady && visibleSales.length > 0 && (
             <table className="catalog-table">
               <thead>
                 <tr>
@@ -154,7 +157,7 @@ function App() {
                 </tr>
               </thead>
               <tbody>
-                {sales.map((sale) => (
+                {visibleSales.map((sale) => (
                   <tr key={sale.id}>
                     <td className="sale-name">{sale.name}</td>
                     <td className="sale-price">${sale.price}</td>
@@ -180,7 +183,8 @@ function App() {
           <CatalogState
             status={status}
             errorMessage={errorMessage}
-            isEmpty={isCatalogReady && sales.length === 0}
+            isEmpty={isCatalogReady && visibleSales.length === 0}
+            hasHiddenItems={sales.length > 0}
             onRetry={retry}
           />
         </div>
@@ -194,7 +198,7 @@ function App() {
           type="button"
           className="button primary close-button"
           onClick={handleCloseAccount}
-          disabled={!isCatalogReady || sales.length === 0}
+          disabled={!isCatalogReady || visibleSales.length === 0}
         >
           Cerrar cuenta
         </button>
