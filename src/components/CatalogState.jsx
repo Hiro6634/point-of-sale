@@ -1,7 +1,13 @@
 import { CATALOG_STATUS } from '../hooks/useCatalogSubscription.js'
 import Spinner from './Spinner.jsx'
 
-export default function CatalogState({ status, errorMessage, isEmpty, onRetry }) {
+export default function CatalogState({
+  status,
+  errorMessage,
+  isEmpty,
+  hasHiddenItems,
+  onRetry,
+}) {
   if (status === CATALOG_STATUS.LOADING) {
     return <Spinner label="Cargando catálogo…" />
   }
@@ -23,7 +29,9 @@ export default function CatalogState({ status, errorMessage, isEmpty, onRetry })
     return (
       <div className="catalog-state">
         <p className="catalog-state-message">
-          No hay productos en el catálogo.
+          {hasHiddenItems
+            ? 'No hay productos habilitados en el catálogo.'
+            : 'No hay productos en el catálogo.'}
         </p>
       </div>
     )
