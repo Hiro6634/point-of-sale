@@ -19,12 +19,21 @@
 #                             sin pasar por PR, salteando la revision.
 #   3819474  Netlify issues  - push directo a dev. Primera version del fix.
 #   3fe8767  Netlify issues  - otra version, en version-0.3.0.
-#   5859515  Netlify issues  - tercera version, quedada fuera de main.
+#   5859515  Netlify issues  - tercera version. Se hizo por push directo a
+#                             version-0.3.0, pero despues entro a main igual
+#                             por el PR #38 (merge 24fadea). El commit en si
+#                             se escribio fuera del protocolo, asi que sigue
+#                             en la lista.
 #
 # Los tres "Netlify issues" tienen patch-id distintos: no son el mismo fix
 # replicado, son tres intentos distintos del mismo arreglo en tres ramas
 # largas. Eso es justamente lo que pasa cuando un fix se aplica sobre la rama
 # equivocada en vez de entrar por PR.
+#
+# Los dos primeros (3819474 y 3fe8767) quedaron en ramas que no llegaron a
+# main; el contenido quedo cubierto por 5859515 y el merge 24fadea. Sus
+# commits siguen siendo alcanzables desde los tags archive/dev y
+# archive/version-0.3.0-dev.
 
 642d936d51af973b2fdc88084241225041395577
 0d5e2e90483a3412fdd39f44159b846676d2802a
