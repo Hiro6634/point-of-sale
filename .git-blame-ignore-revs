@@ -1,0 +1,43 @@
+# Commits que git blame ignora.
+#
+# Uso: git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# Acá van los commits que se agregaron por fuera del protocolo (push directo a
+# una rama compartida, en vez de feature branch + PR). No se reescribe la
+# historia: main es compartida y reescribirla no vale el riesgo. Lo que hace
+# este archivo es sacar esos commits de la culpa para que blame apunte al
+# commit de la feature branch que realmente toco la linea.
+#
+# Contexto de cada uno:
+#
+#   642d936  Library Update  - push directo a la linea principal. Agrego
+#                             netlify.toml, .gitignore y el bump de deps.
+#   0d5e2e9  Library Update  - push directo a version-0.2.0. Commiteo
+#                             artefactos de build (.subtest/) y una version
+#                             distinta del mismo fix que 642d936.
+#   49e53d5  Merge directo   - merge de epic/POS-3-catalogo a version-0.3.0
+#                             sin pasar por PR, salteando la revision.
+#   3819474  Netlify issues  - push directo a dev. Primera version del fix.
+#   3fe8767  Netlify issues  - otra version, en version-0.3.0.
+#   5859515  Netlify issues  - tercera version. Se hizo por push directo a
+#                             version-0.3.0, pero despues entro a main igual
+#                             por el PR #38 (merge 24fadea). El commit en si
+#                             se escribio fuera del protocolo, asi que sigue
+#                             en la lista.
+#
+# Los tres "Netlify issues" tienen patch-id distintos: no son el mismo fix
+# replicado, son tres intentos distintos del mismo arreglo en tres ramas
+# largas. Eso es justamente lo que pasa cuando un fix se aplica sobre la rama
+# equivocada en vez de entrar por PR.
+#
+# Los dos primeros (3819474 y 3fe8767) quedaron en ramas que no llegaron a
+# main; el contenido quedo cubierto por 5859515 y el merge 24fadea. Sus
+# commits siguen siendo alcanzables desde los tags archive/dev y
+# archive/version-0.3.0-dev.
+
+642d936d51af973b2fdc88084241225041395577
+0d5e2e90483a3412fdd39f44159b846676d2802a
+49e53d5535dadddb1d93acbfb8380610efeedbcc
+3819474b19190a4447a1bb1e6813eb8ba8f6c767
+3fe8767c4d38f2ea73f729bf00c54e73a248473d
+585951578882c5c4b4a9fba2cae44d9b2071aa23
