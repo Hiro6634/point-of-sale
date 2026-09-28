@@ -7,25 +7,31 @@ distinto patch-id y hay que resolver el conflicto a mano.
 
 ## Flujo
 
-El flujo tiene cuatro tramos y el destino final se elige segun el estado de la
-version:
+El flujo tiene cinco tramos. `dev` y `main` son dos estados distintos del mismo
+trabajo: `dev` es donde se prueba, `main` es lo publicado.
 
 ```
 feature/HU-xxx-<descripcion>   <- se corta desde la epic a la que pertenece
         |
-        |  Pull Request  (requiere revision)
+        |  Pull Request
         v
 epic/POS-x-<descripcion>        <- acumula las HUs de una epica
         |
+        |  PR, cuando la epica esta completa
+        v
+version-x.y.z-dev                <- se corta desde la epic
+        |
         |  Pull Request
         v
-version-x.y.z                   <- se corta desde la epic, no desde main
+dev                              <- integracion: se prueba aca
         |
-        +----> dev               <- version-x.y.z-dev, mientras se integra
-        |
-        |  Pull Request + tag
+        |  PR + tag, al publicar
         v
-      main                       <- al publicar
+version-x.y.z                    <- se corta desde dev, no desde la epic
+        |
+        |  Pull Request
+        v
+main
 ```
 
 Reglas que no se negocian:
@@ -43,10 +49,39 @@ Reglas que no se negocian:
 - **`epic/*` y `version-*` son puntos de integracion, no ramas de trabajo.**
   Reciben trabajo de otras branches por PR. `main` y `dev` son donde aterriza
   una version; ninguna de las dos se commitea directo.
+- **`version-x.y.z` se corta desde `dev`, nunca desde la epic ni desde
+  `main`.** Es lo que sostiene el invariante de abajo: si la release se
+  cortara de otro lado, `main` podria recibir commits que `dev` no tiene.
 
 El tramo `epic -> version` es el que se salteo antes: `epic/POS-3-catalogo`
 llego a `version-0.3.0` por merge directo (`49e53d5`) en vez de por PR, y por
 eso ese commit esta en `.git-blame-ignore-revs`.
+
+## dev
+
+`dev` es el entorno donde se prueba lo que ya esta integrado en una epic, no
+una rama de trabajo. Ahi se prueba una HU antes de publicarla.
+
+**Invariante: `main` nunca tiene un commit que `dev` no tenga.** Se sostiene
+solo si `dev` va siempre adelante o a la par. Cuando `main` avanza, `dev` tiene
+que avanzar en el mismo movimiento:
+
+```bash
+git merge-base --is-ancestor origin/main origin/dev && echo "invariante ok"
+```
+
+Si eso falla, significa que `main` tiene trabajo sin probar: se mergea `main`
+a `dev` por PR y se sigue.
+
+Por eso el orden importa: la release entra primero a `dev` via
+`version-x.y.z-dev`, y recien despues a `main`. Al reves, `main` queda con
+commits que nadie probo.
+
+Chequeo rapido del estado antes de mergear algo a `main`:
+
+```bash
+git rev-list --count origin/dev..origin/main   # tiene que dar 0
+```
 
 ## Prefijos de branch
 
@@ -57,13 +92,14 @@ eso ese commit esta en `.git-blame-ignore-revs`.
 | `chore/`     | Mantenimiento sin cambio de comportamiento. `chore/bump-version` |
 | `docs/`      | Documentacion. `docs/protocolo-de-contribucion`              |
 | `epic/`      | Agrupacion de HUs. `epic/POS-3-catalogo`                     |
-| `version/`   | Rama de version, se corta desde la epic. `version-0.3.0`     |
-| `dev`        | Integracion diaria. Recibe `version-x.y.z-dev` por PR.       |
+| `version/`   | Rama de version. `version-0.3.0-dev` -> `dev`, `version-0.3.0` -> `main`. |
+| `dev`        | Integracion. Se prueba aca lo que ya esta en una epic.        |
 
 El sufijo `-dev` en la rama de version no es decorativo: `version-x.y.z-dev`
 es la que aterriza en `dev`, y `version-x.y.z` sin sufijo es la que aterriza
 en `main`. Hoy conviven `version-0.1.0-dev`, `version-0.3.0-dev` y
-`version-0.3.0`.
+`version-0.3.0`. Las tres estan cerradas: su contenido ya esta en `main` y en
+`dev`, y se pueden borrar.
 
 Numero de epic con padding consistente: `POS-1`, `POS-2`, `POS-3`, `POS-4`.
 La epic de tickets se renombro de `POS-004-tickets-de-venta` a
