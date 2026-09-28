@@ -1,6 +1,9 @@
 .pos-app {
   display: flex;
   flex-direction: column;
+  /* min-height y no height: la pagina crece con el contenido y scrollea entera.
+     Es lo que hace falta para que el ticket, que va al final del listado, quede
+     fuera de pantalla hasta que el cajero baja hasta el. */
   min-height: 100svh;
   box-sizing: border-box;
   /* Solo aplican cuando la app corre instalada y en pantalla completa, para que
@@ -93,17 +96,21 @@
   border-color: var(--border);
 }
 
+/* Listado + ticket, en una sola columna que crece con el contenido. */
 .sales-view {
   display: flex;
   flex-direction: column;
   flex: 1;
   padding: 24px;
-  gap: 16px;
-
-  h2 {
-    margin: 0;
-  }
+  gap: 24px;
+  /* #root centra el texto (venia de la landing); aca se lee columna. */
+  text-align: left;
 }
+
+/* ---- Listado de productos ----
+   Lista con columnas, como en epic/POS-3-catalogo. Sin titulo de categoria: el
+   color de fondo de la fila es el unico indicio de a que categoria pertenece,
+   y como las de una misma categoria salen pegadas se leen igual como un bloque. */
 
 .catalog {
   border: 1px solid var(--border);
@@ -111,14 +118,14 @@
   overflow: hidden;
 }
 
-.catalog-table {
-  border-collapse: collapse;
+.product-table {
   width: 100%;
   text-align: right;
+  border-collapse: collapse;
 
   th,
   td {
-    padding: 12px 18px;
+    padding: 14px 18px;
   }
 
   thead th {
@@ -136,22 +143,46 @@
     text-align: left;
     width: 1%;
   }
+}
 
-  tbody tr {
-    border-bottom: 1px solid var(--border);
+.product-row {
+  --group-color: var(--border);
+  position: relative;
+  background: color-mix(in srgb, var(--group-color) 14%, var(--bg));
+  border-bottom: 1px solid var(--border);
 
-    &:last-child {
-      border-bottom: none;
-    }
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: color-mix(in srgb, var(--group-color) 26%, var(--bg));
+  }
+
+  /* El boton es lo unico pulsable de la fila y :active no se hereda hacia
+     arriba, asi que :has() es lo que le da el feedback de presionado a la
+     fila entera. */
+  &:has(.product-add:active) {
+    background: var(--accent-bg);
   }
 }
 
-.sale-group {
-  --group-color: var(--border);
-  background: color-mix(in srgb, var(--group-color) 14%, var(--bg));
+/* Ya esta en el ticket: una franja de acento en el borde izquierdo, para no
+   pelearle el fondo a la categoria. Y Cant y S.Total se destacan, que son las
+   columnas que el cajero vino a tocar. */
+.product-row--in-ticket {
+  .product-name {
+    box-shadow: inset 4px 0 0 var(--accent);
+  }
+
+  .product-qty,
+  .product-amount {
+    color: var(--accent);
+    font-weight: 700;
+  }
 }
 
-.sale-name {
+.product-name {
   color: var(--text-h);
   font-weight: 500;
   text-align: left;
@@ -160,60 +191,51 @@
   text-overflow: ellipsis;
 }
 
-.sale-price,
-.sale-qty,
-.sale-amount {
+.product-add {
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  touch-action: manipulation;
+
+  /* El pseudoelemento se estira a toda la fila: el <button> sigue siendo
+     accesible y navegable con teclado, lo que se estira es el area tactil. */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  /* El anillo de foco va en el ::after, que es lo que tiene el alto de la
+     fila; en el boton seria un rectangulo del tamaño del texto. */
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:focus-visible::after {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+}
+
+.product-price,
+.product-qty,
+.product-amount {
   white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 15px;
 }
 
-.sale-price,
-.sale-qty {
+.product-price {
   color: var(--text);
-  font-family: var(--mono);
-  font-size: 14px;
 }
 
-.sale-amount {
-  font-family: var(--mono);
+.product-amount {
   font-weight: 700;
   color: var(--text-h);
-}
-
-.sale-action {
-  text-align: right;
-
-  .remove-button {
-    width: 36px;
-    height: 36px;
-    padding: 0;
-    color: var(--danger);
-    background: var(--danger-bg);
-    border-color: var(--danger-border);
-  }
-}
-
-@media (max-width: 640px) {
-  .topbar {
-    padding: 12px 16px;
-  }
-
-  .sales-view {
-    padding: 16px;
-  }
-
-  .catalog-table {
-    table-layout: fixed;
-
-    th,
-    td {
-      padding: 10px 8px;
-    }
-
-    thead th:first-child,
-    tbody td:first-child {
-      width: 42%;
-    }
-  }
 }
 
 .catalog-state {
@@ -258,23 +280,162 @@
   }
 }
 
-.totals {
+/* ---- Resumen del ticket ----
+   Va al final del listado, en el flujo normal de la pagina: no esta anclado ni
+   tiene position: sticky, asi que el cajero tiene que bajar hasta el final para
+   leer la cuenta y decidir si cobra. Es el filtro final contra vender de mas. */
+
+.ticket {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 2px solid var(--border);
+}
+
+.ticket-header {
   display: flex;
   align-items: center;
+  gap: 12px;
+}
+
+.ticket-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ticket-count {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--text);
+}
+
+/* Ojo: .ticket-body no lleva max-height ni overflow a proposito. Si el resumen
+   scrolleara por su cuenta quedaria un scroll anidado dentro del scroll de la
+   pagina, y el gesto de bajar para leer la cuenta terminaria moviendo el
+   listado de productos. El ticket crece y es la pagina la que baja. */
+
+.ticket-empty {
+  padding: 4px 0;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.ticket-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ticket-line {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.ticket-line-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-h);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ticket-line-qty {
+  min-width: 2ch;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.ticket-line-amount {
+  min-width: 7ch;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--text-h);
+}
+
+.ticket-total {
+  display: flex;
+  align-items: baseline;
   justify-content: space-between;
-  margin-top: auto;
-  padding-top: 16px;
+  padding-top: 12px;
   border-top: 2px solid var(--border);
-  font-size: 22px;
+  font-size: 20px;
 
   strong {
     font-family: var(--mono);
+    font-size: 28px;
     color: var(--text-h);
   }
 }
 
-.close-button {
-  align-self: stretch;
+.ticket-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.ticket-close-button {
+  /* El cobro es la accion que se va a repetir todo el dia: se lleva el ancho
+     y el alto, y Cancelar queda al lado, no compite. */
+  flex: 1;
+  min-height: 56px;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.ticket-cancel-button {
+  min-height: 56px;
+  font-size: 15px;
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+}
+
+
+@media (max-width: 640px) {
+  .topbar {
+    padding: 12px 16px;
+  }
+
+  .sales-view {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .product-table {
+    /* Con nombres largos la tabla auto se desborda y empuja las otras
+       columnas fuera de pantalla; fijo reparte el ancho a mano. */
+    table-layout: fixed;
+
+    th,
+    td {
+      padding: 12px 10px;
+    }
+
+    thead th:first-child,
+    tbody td:first-child {
+      width: 42%;
+    }
+  }
 }
 
 .panel {
