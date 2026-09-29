@@ -26,23 +26,28 @@ export default function ProductList({ products, quantities, onAddProduct }) {
                     estira a toda la fila, asi que un toque en cualquier columna
                     suma el producto. Sin esto el target seria solo el ancho del
                     nombre, que es la parte chica de la fila. Tocar de nuevo el
-                    mismo producto lo deja en 1: no hay forma de subirlo. */}
+                    mismo producto le suma otra unidad a la misma fila. */}
                 <button
                   type="button"
                   className="product-add"
                   onClick={() => onAddProduct(product)}
                   aria-label={
                     qty > 0
-                      ? `Agregar ${product.name} al ticket. Ya agregados: ${qty}`
+                      ? `Sumar una unidad de ${product.name} al ticket. Ya hay ${qty} en el ticket`
                       : `Agregar ${product.name} al ticket`
                   }
                 >
+                  {/* El nombre queda limpio a proposito: la cantidad de la
+                      linea se lee en la columna Cant, y Prefijarla al nombre
+                      seria mostrarla dos veces en la misma fila. */}
                   {product.name}
                 </button>
               </td>
               <td className="product-price">{formatMoney(product.price)}</td>
-              {/* Cant y S.Total son la foto de la linea dentro del ticket: lo
-                  que este producto ya aporta a la cuenta. */}
+              {/* Cant y S.Total son la foto de la linea dentro del ticket: que
+                  cantidad lleva este producto y cuanto aporta al total. El
+                  subtotal parcial es el precio por esa cantidad, no el total
+                  del ticket. */}
               <td className="product-qty">{qty > 0 ? qty : ''}</td>
               <td className="product-amount">
                 {qty > 0 ? formatMoney(product.price * qty) : ''}

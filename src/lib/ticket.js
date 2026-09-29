@@ -6,24 +6,35 @@
 // recargo, un producto que se deshabilita), la linea que ya esta en pantalla no
 // debe mutar sola: el cajero confirmo ese precio al tocarlo.
 //
-// En esta instancia la cantidad es fija: tocar una linea la pone en 1 y no hay
-// forma de bajarla. Todo lo que este en 1 o mas va al ticket, y como nada
-// guarda cantidades en 0, con las lineas que hay alcanza para el total.
+// Tocar es sumar una unidad. Si la linea ya existe se le incrementa la
+// cantidad en 1 y no se abre una fila nueva: dos toques sobre el mismo producto
+// dan una sola linea con qty 2, no dos lineas con qty 1. Una linea por producto
+// es lo que hace util la tabla, porque el total se lee linea por linea.
+//
+// Al incrementar no se releen name ni price del catalogo, por la misma razon de
+// arriba: el cajero confirmo ese precio la primera vez que toco.
+//
+// La cantidad solo sube. No hay forma de bajarla, asi que un toque de mas se
+// corrige con Cancelar, que tira la operacion entera.
 
 export function addProductToTicket(lines, product) {
-  if (lines.some((line) => line.productId === product.id)) {
-    return lines
+  const index = lines.findIndex((line) => line.productId === product.id)
+
+  if (index === -1) {
+    return [
+      ...lines,
+      {
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        qty: 1,
+      },
+    ]
   }
 
-  return [
-    ...lines,
-    {
-      productId: product.id,
-      name: product.name,
-      price: product.price,
-      qty: 1,
-    },
-  ]
+  return lines.map((line, i) =>
+    i === index ? { ...line, qty: line.qty + 1 } : line,
+  )
 }
 
 export function ticketUnits(lines) {
