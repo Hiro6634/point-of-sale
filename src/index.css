@@ -18,6 +18,14 @@
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
+  /* Fuente de los numeros de precio, separada de --mono a proposito: la
+     monoespaciada de sistema (Consolas) es ancha y las columnas de precio y
+     subtotal se comian el ancho que le sobra a la descripcion. Es la misma
+     condensada del build anterior, asi que los numeros se ven como siempre.
+     --mono sigue para el JSON, que si necesita monoespaciada de verdad.
+     tabular-nums esta por si la fuente no llega a cargar: el fallback es
+     proporcional y sin esto los importes se desalinean en la columna. */
+  --numbers: 'Open Sans Condensed', 'Segoe UI', system-ui, sans-serif;
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
