@@ -2,8 +2,10 @@
 import CatalogState from './components/CatalogState.jsx'
 import CloseAccount from './components/CloseAccount.jsx'
 import LoginForm from './components/LoginForm.jsx'
+import ProductList from './components/ProductList.jsx'
 import Settings from './components/Settings.jsx'
 import ThemeToggle from './components/ThemeToggle.jsx'
+import TicketSummary from './components/TicketSummary.jsx'
 import { DEFAULT_TERMINAL_ID, STORAGE_KEYS } from './config.js'
 import {
   signOutAuthUser,
@@ -16,7 +18,8 @@ import {
 import { useLocalStorage } from './hooks/useLocalStorage.js'
 import { useTheme } from './hooks/useTheme.js'
 import { buildClosePayload } from './lib/closing.js'
-import { groupSalesByCategory } from './lib/group-sales.js'
+import { listProductsByCategory } from './lib/catalog-list.js'
+import { addProductToTicket, ticketTotal } from './lib/ticket.js'
 import viteLogo from './assets/vite.svg'
 import './App.css'
 
@@ -28,17 +31,12 @@ function GearIcon() {
   )
 }
 
-function TrashIcon() {
-  return (
-    <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-    </svg>
-  )
-}
-
 function App() {
   const [view, setView] = useState('pos')
-  const [sales, setSales] = useState([])
+  // products viene de Firestore y lo reescribe el snapshot en cada cambio.
+  // ticket es de la sesion local: el cajero lo arma tocando y nadie mas lo toca.
+  const [products, setProducts] = useState([])
+  const [ticket, setTicket] = useState([])
   const [terminalId, setTerminalId] = useLocalStorage(
     STORAGE_KEYS.terminalId,
     DEFAULT_TERMINAL_ID,
@@ -51,14 +49,17 @@ function App() {
 
   const { status, errorMessage, categories, retry } = useCatalogSubscription({
     enabled: Boolean(currentUser),
-    onProducts: setSales,
+    onProducts: setProducts,
   })
 
   const { theme, toggleTheme } = useTheme()
 
-  const visibleSales = sales.filter((sale) => sale.enabled)
-  const groups = groupSalesByCategory(visibleSales, categories)
-  const total = visibleSales.reduce((sum, sale) => sum + sale.price * sale.qty, 0)
+  const visibleProducts = products.filter((product) => product.enabled)
+  const catalogProducts = listProductsByCategory(visibleProducts, categories)
+  const quantities = new Map(
+    ticket.map((line) => [line.productId, line.qty]),
+  )
+  const total = ticketTotal(ticket)
   const isCatalogReady = status === CATALOG_STATUS.READY
 
   useEffect(() => {
@@ -68,19 +69,23 @@ function App() {
     })
   }, [setCurrentUser])
 
-  function handleRemoveSale(id) {
-    setSales((current) => current.filter((sale) => sale.id !== id))
+  function handleAddProduct(product) {
+    setTicket((current) => addProductToTicket(current, product))
   }
 
   function handleCloseAccount() {
-    setClosingPayload(
-      buildClosePayload({ terminalId, items: visibleSales, total }),
-    )
+    setClosingPayload(buildClosePayload({ terminalId, items: ticket, total }))
+  }
+
+  // Abandona la operacion entera. No hay forma de sacar un solo producto: la
+  // unica salida de una cuenta es cobrarla o tirar todo.
+  function handleCancel() {
+    setTicket([])
   }
 
   function handleClosingDone() {
     setClosingPayload(null)
-    setSales([])
+    setTicket([])
   }
 
   function handleSignIn(userOrEmail) {
@@ -152,69 +157,31 @@ function App() {
 
       <main className="sales-view">
         <div className="catalog">
-          {isCatalogReady && visibleSales.length > 0 && (
-            <table className="catalog-table">
-              <thead>
-                <tr>
-                  <th scope="col">Descripcion</th>
-                  <th scope="col">Precio</th>
-                  <th scope="col">Cant</th>
-                  <th scope="col">S.Total</th>
-                  <th scope="col" aria-label="Acciones" />
-                </tr>
-              </thead>
-              <tbody>
-                {groups.map((group) =>
-                  group.items.map((sale) => (
-                    <tr
-                      key={sale.id}
-                      className="sale-group"
-                      style={{ '--group-color': group.color }}
-                    >
-                      <td className="sale-name">{sale.name}</td>
-                      <td className="sale-price">${sale.price}</td>
-                      <td className="sale-qty">{sale.qty}</td>
-                      <td className="sale-amount">${sale.price * sale.qty}</td>
-                      <td className="sale-action">
-                        <button
-                          type="button"
-                          className="button icon-button remove-button"
-                          aria-label={`Eliminar ${sale.name}`}
-                          title="Eliminar"
-                          onClick={() => handleRemoveSale(sale.id)}
-                        >
-                          <TrashIcon />
-                        </button>
-                      </td>
-                    </tr>
-                  )),
-                )}
-              </tbody>
-            </table>
+          {isCatalogReady && visibleProducts.length > 0 && (
+            <ProductList
+              products={catalogProducts}
+              quantities={quantities}
+              onAddProduct={handleAddProduct}
+            />
           )}
 
           <CatalogState
             status={status}
             errorMessage={errorMessage}
-            isEmpty={isCatalogReady && visibleSales.length === 0}
-            hasHiddenItems={sales.length > 0}
+            isEmpty={isCatalogReady && visibleProducts.length === 0}
+            hasHiddenItems={products.length > 0}
             onRetry={retry}
           />
         </div>
 
-        <footer className="totals">
-          <span>Total</span>
-          <strong>{isCatalogReady ? total : 0}</strong>
-        </footer>
-
-        <button
-          type="button"
-          className="button primary close-button"
-          onClick={handleCloseAccount}
-          disabled={!isCatalogReady || visibleSales.length === 0}
-        >
-          Cerrar cuenta
-        </button>
+        {/* Va al final del listado y no esta anclado a proposito: el cajero
+            baja hasta el final para revisar la cuenta antes de cobrar. */}
+        <TicketSummary
+          lines={ticket}
+          total={total}
+          onClose={handleCloseAccount}
+          onCancel={handleCancel}
+        />
       </main>
 
       {closingPayload && (
