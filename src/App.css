@@ -285,18 +285,42 @@
    tiene position: sticky, asi que el cajero tiene que bajar hasta el final para
    leer la cuenta y decidir si cobra. Es el filtro final contra vender de mas. */
 
+/* ---- Ticket ----
+   El ticket no es la continuacion del catalogo: es otro documento. Por eso
+   lleva recuadro propio, fondo propio y ancho de papel, en vez de pegarse al
+   listado con una linea. El catalogo es la pantalla donde se trabaja; el ticket
+   es el comprobante que se revisa abajo. */
+.ticket-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  /* Ancho de ticket impreso. Centrado para que se lea como un documento suelto
+     y no como otra fila de la tabla de arriba. */
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
 .ticket {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding-top: 24px;
-  border-top: 2px solid var(--border);
+  padding: 20px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  /* Radio chico a proposito: el catalogo usa 12px porque es una card de app, y
+     el papel no tiene las esquinas tan redondeadas. */
+  border-radius: 4px;
 }
 
 .ticket-header {
   display: flex;
-  align-items: center;
+  align-items: baseline;
+  justify-content: space-between;
   gap: 12px;
+  /* El corte punteado es el separador clasico del ticket impreso. */
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--border);
 }
 
 .ticket-title {
@@ -344,24 +368,25 @@
   }
 }
 
-.ticket-line-name {
-  flex: 1;
-  min-width: 0;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-h);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
+/* Orden de columnas del papel: Cant, Descripcion, SubTotal. La cantidad abre la
+   linea y el subtotal la cierra alineado a la derecha, como en un ticket
+   impreso. El nombre queda en medio y estira para que las tres columnas caigan
+   siempre en el mismo lugar. */
 .ticket-line-qty {
-  min-width: 2ch;
-  text-align: center;
+  min-width: 3ch;
+  text-align: left;
   font-family: var(--mono);
   font-size: 16px;
   font-weight: 700;
   color: var(--text);
+}
+
+.ticket-line-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  color: var(--text-h);
+  overflow-wrap: anywhere;
 }
 
 .ticket-line-amount {
@@ -372,17 +397,24 @@
   color: var(--text-h);
 }
 
+/* Ultima linea del documento. Solo un poco mas grande que el cuerpo y en
+   negrita: es lo unico que hay que leer antes de cobrar, asi que tiene que ganar
+   sin parecer un cartel. */
 .ticket-total {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+  gap: 12px;
   padding-top: 12px;
-  border-top: 2px solid var(--border);
+  border-top: 1px dashed var(--border);
   font-size: 20px;
+  font-weight: 700;
+  color: var(--text-h);
 
   strong {
     font-family: var(--mono);
-    font-size: 28px;
+    font-size: 24px;
+    font-weight: 700;
     color: var(--text-h);
   }
 }
