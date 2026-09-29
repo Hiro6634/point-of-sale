@@ -143,6 +143,12 @@
     text-align: left;
     width: 1%;
   }
+
+  /* La columna del borrado se ajusta al contenido para que las columnas de
+     datos no se corran al agregarla. */
+  thead th:last-child {
+    width: 1%;
+  }
 }
 
 .product-row {
@@ -236,6 +242,56 @@
 .product-amount {
   font-weight: 700;
   color: var(--text-h);
+}
+
+/* ---- Borrar un item del ticket ----
+   El boton de quitar vive en su propia celda, al final de la fila. El detalle
+   que lo hace funcionar es el z-index: .product-add tiene un ::after con
+   inset 0 que se estira a toda la fila para que un toque en cualquier columna
+   sume el producto. Ese pseudoelemento es posicionado, asi que se pinta encima
+   del contenido que no esta posicionado y se comeria el click. Con
+   position relative el boton queda por arriba del ::after y cada uno hace lo
+   suyo en su territorio. */
+.product-remove-cell {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.product-remove {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* 40px es el minimo para que un dedo lo alcance sin acertar de precision. */
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  color: var(--danger);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  touch-action: manipulation;
+
+  &:hover:not(:disabled) {
+    background: var(--danger-bg);
+    border-color: var(--danger-border);
+  }
+
+  /* Fuera de la cuenta no hay nada que quitar. El boton sigue ocupando su lugar
+     para que la columna no baile entre filas, pero apagado. */
+  &:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
+
+  /* El anillo va en el boton y no en un ::after: este no necesita estirarse,
+     el area tactil ya es la del boton. */
+  &:focus-visible {
+    outline: 2px solid var(--danger);
+    outline-offset: 2px;
+  }
 }
 
 .catalog-state {
