@@ -1,4 +1,13 @@
 .pos-app {
+  /* Ancho comodo de lectura para el contenido. Es el techo en pantalla ancha:
+     sin esto la tabla del catalogo se estira a lo ancho de un monitor y las
+     columnas quedan lejisimas entre si. En pantalla chica manda el ancho
+     disponible y --content-width deja de mandar. */
+  --content-width: 912px;
+  /* Margen lateral. Cambia en el breakpoint chico y lo heredan tanto el
+     contenido como el topbar, asi los bordes de uno y otro quedan alineados. */
+  --gutter: 24px;
+
   display: flex;
   flex-direction: column;
   /* min-height y no height: la pagina crece con el contenido y scrollea entera.
@@ -17,7 +26,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px 24px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  /* El logo y las acciones se alinean con el bloque de contenido de abajo: en
+     pantalla ancha los margenes laterales crecen lo justo para que ambos
+     bloques empiecen en la misma columna, y en pantalla chica queda el gutter. */
+  padding-left: max(var(--gutter), calc((100% - var(--content-width)) / 2));
+  padding-right: max(var(--gutter), calc((100% - var(--content-width)) / 2));
   border-bottom: 1px solid var(--border);
 }
 
@@ -101,10 +116,16 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 24px;
+  padding: var(--gutter);
   gap: 24px;
   /* #root centra el texto (venia de la landing); aca se lee columna. */
   text-align: left;
+  /* Centrado en pantalla ancha. El catalogo ocupa todo el ancho de esta caja y
+     el ticket, que es mas angosto, se centra adentro. */
+  width: 100%;
+  max-width: calc(var(--content-width) + var(--gutter) * 2);
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* ---- Listado de productos ----
@@ -125,6 +146,9 @@
 
   th,
   td {
+    /* 14px de padding vertical mas el texto (18px de raiz por 145% de
+       interlineado = 26px) dan una fila de 54px, un 20% menos que los 68px que
+       daba cuando el boton de borrar estaba en flujo. Ver .product-remove-cell. */
     padding: 14px 18px;
   }
 
@@ -192,6 +216,11 @@
   color: var(--text-h);
   font-weight: 500;
   text-align: left;
+  /* Una sola linea, siempre. Con la descripcion en "normal" el navegador
+     reparte el ancho de las columnas como le parece y la envuelve aunque sobre
+     espacio de sobra, que es lo que pasaba en pantalla ancha. nowrap le dice
+     que se lleve el ancho que le falte y solo se recorta cuando el nombre es
+     mas largo que la columna entera, que ya no hay arreglo. */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -231,7 +260,8 @@
 .product-qty,
 .product-amount {
   white-space: nowrap;
-  font-family: var(--mono);
+  font-family: var(--numbers);
+  font-variant-numeric: tabular-nums;
   font-size: 15px;
 }
 
@@ -252,13 +282,27 @@
    del contenido que no esta posicionado y se comeria el click. Con
    position relative el boton queda por arriba del ::after y cada uno hace lo
    suyo en su territorio. */
+/* El boton va fuera de flujo, no dentro, y esa es la clave de la densidad de la
+   fila. En flujo el <button> de 40px era lo mas alto de la fila y ponia el piso
+   del alto: con el padding en 14px la fila daba 40 + 28 = 68px, y bajar el
+   padding casi no rendia porque el boton seguia mandando (40 + 22 = 62). Sacado
+   de flujo, el alto lo decide el texto y el padding, el boton se centra sobre
+   la fila sin empujarla y el area tactil de 40px se conserva entera.
+   Por eso la celda lleva width explicito: un hijo absoluto no aporta ancho a su
+   celda, asi que sin esto la celda se quedaria con el padding solo y el boton
+   se saldria de la tabla. */
 .product-remove-cell {
-  width: 1%;
+  position: relative;
+  width: 76px;
+  padding: 0;
   white-space: nowrap;
 }
 
 .product-remove {
-  position: relative;
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  transform: translateY(-50%);
   z-index: 1;
   display: inline-flex;
   align-items: center;
@@ -388,7 +432,8 @@
 }
 
 .ticket-count {
-  font-family: var(--mono);
+  font-family: var(--numbers);
+  font-variant-numeric: tabular-nums;
   font-size: 14px;
   color: var(--text);
 }
@@ -410,18 +455,18 @@
   padding: 0;
   display: flex;
   flex-direction: column;
+  /* Sin lineas horizontales entre items. Lo que separa un item del otro es el
+     espacio en blanco, no un borde: con 20 lineas el papel se leia como una
+     tabla de rayas y el papel mismo perdia fuerza de comprobante. El gap hace
+     ese trabajo y de paso compacta la lista, que es lo que sirve para una
+     cuenta larga. */
+  gap: 8px;
 }
 
 .ticket-line {
   display: flex;
   align-items: baseline;
   gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-
-  &:last-child {
-    border-bottom: none;
-  }
 }
 
 /* Orden de columnas del papel: Cant, Descripcion, SubTotal. La cantidad abre la
@@ -431,7 +476,8 @@
 .ticket-line-qty {
   min-width: 3ch;
   text-align: left;
-  font-family: var(--mono);
+  font-family: var(--numbers);
+  font-variant-numeric: tabular-nums;
   font-size: 16px;
   font-weight: 700;
   color: var(--text);
@@ -448,7 +494,8 @@
 .ticket-line-amount {
   min-width: 7ch;
   text-align: right;
-  font-family: var(--mono);
+  font-family: var(--numbers);
+  font-variant-numeric: tabular-nums;
   font-size: 15px;
   color: var(--text-h);
 }
@@ -468,7 +515,8 @@
   color: var(--text-h);
 
   strong {
-    font-family: var(--mono);
+    font-family: var(--numbers);
+    font-variant-numeric: tabular-nums;
     font-size: 24px;
     font-weight: 700;
     color: var(--text-h);
@@ -500,29 +548,109 @@
 
 
 @media (max-width: 640px) {
+  .pos-app {
+    /* Margen mas chico para que la fila del catalogo entre entera. */
+    --gutter: 16px;
+  }
+
   .topbar {
-    padding: 12px 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
 
   .sales-view {
-    padding: 16px;
     gap: 20px;
   }
 
   .product-table {
     /* Con nombres largos la tabla auto se desborda y empuja las otras
-       columnas fuera de pantalla; fijo reparte el ancho a mano. */
+       columnas fuera de pantalla; fijo reparte el ancho a mano. Es tambien lo
+       que garantiza que la fila se vea completa en vez de que .catalog la
+       recorte en silencio. */
     table-layout: fixed;
 
     th,
     td {
-      padding: 12px 10px;
+      /* 10px en vez de los 12px de antes: 21.75px de texto mas 20 de padding
+         son 42px de fila contra los 54px previos, un 22% menos. */
+      padding: 10px 5px;
     }
 
+    /* Los anchos van en px y no en ch a proposito: ch se resuelve contra la
+       fuente de cada celda, y el th (10px) y el td (13px) dan medidas
+       distintas, con lo cual los numeros se saldrian de su columna y .catalog
+       los recortaria. En px el reparto es el mismo para las dos filas.
+       Ojo que 60px es un margen de seguridad, no una medida: no hay forma de
+       medir el ancho de un digito en Open Sans Condensed sin abrir un
+       navegador, y con la columna apenas justa un "$1250000" largo se pasaria
+       de largo y .catalog lo cortaria en silencio. Si algun importe se ve
+       cortado, esto es lo primero que hay que subir.
+       Son 187px fijos de 328 que deja un celular de 360, y los 141 que sobran
+       son de la descripcion, que se queda con el remanente por ser la unica
+       columna sin ancho. */
     thead th:first-child,
     tbody td:first-child {
-      width: 42%;
+      width: auto;
     }
+
+    thead th:nth-child(2),
+    tbody td:nth-child(2) {
+      width: 60px;
+    }
+
+    thead th:nth-child(3),
+    tbody td:nth-child(3) {
+      width: 32px;
+    }
+
+    thead th:nth-child(4),
+    tbody td:nth-child(4) {
+      width: 60px;
+    }
+
+    /* La celda del boton de borrar. Sobrescribe el width: 1% de la base, que
+       con layout fijo seria literal y dejaria el boton fuera, y el padding en 0
+       porque el boton esta fuera de flujo. */
+    thead th:nth-child(5),
+    tbody td:nth-child(5) {
+      width: 38px;
+      padding: 0;
+    }
+
+    thead th {
+      font-size: 10px;
+      letter-spacing: 0;
+    }
+  }
+
+  .product-price,
+  .product-qty,
+  .product-amount {
+    font-size: 13px;
+  }
+
+  .product-name {
+    /* Un punto mas chico que el 16px que pone la raiz en este breakpoint. Con
+       la descripcion en una sola linea, cada caracter que se le saque al
+       nombre es un caracter mas que entra sin recortarse. */
+    font-size: 15px;
+  }
+
+  .product-remove {
+    /* 34px en vez de los 30px de antes: la fila se achico, hay lugar de sobra
+       para un area tactil un poco mas grande sin que la vuelva a mandar. */
+    right: 2px;
+    width: 34px;
+    height: 34px;
+  }
+
+  .ticket {
+    /* Un poco menos de aire para que las tres columnas del papel respiren. */
+    padding: 16px;
+  }
+
+  .ticket-line {
+    gap: 10px;
   }
 }
 
@@ -712,7 +840,7 @@
   font-size: 16px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing:  fri0.5px;
+  letter-spacing: 0.5px;
   color: #fff;
   background: var(--accent);
   border: 1px solid transparent;
