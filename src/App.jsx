@@ -19,7 +19,7 @@ import { useLocalStorage } from './hooks/useLocalStorage.js'
 import { useTheme } from './hooks/useTheme.js'
 import { buildClosePayload } from './lib/closing.js'
 import { listProductsByCategory } from './lib/catalog-list.js'
-import { addProductToTicket, ticketTotal } from './lib/ticket.js'
+import { addProductToTicket, removeProductFromTicket, ticketTotal } from './lib/ticket.js'
 import viteLogo from './assets/vite.svg'
 import './App.css'
 
@@ -71,6 +71,12 @@ function App() {
 
   function handleAddProduct(product) {
     setTicket((current) => addProductToTicket(current, product))
+  }
+
+  // Deja el item en cero y solo ese: el total sale de ticketTotal(ticket), asi
+  // que se recalcula solo con la linea afuera, sin ningun estado que sincronizar.
+  function handleRemoveProduct(product) {
+    setTicket((current) => removeProductFromTicket(current, product.id))
   }
 
   function handleCloseAccount() {
@@ -162,6 +168,7 @@ function App() {
               products={catalogProducts}
               quantities={quantities}
               onAddProduct={handleAddProduct}
+              onRemoveProduct={handleRemoveProduct}
             />
           )}
 

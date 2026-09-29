@@ -6,24 +6,44 @@
 // recargo, un producto que se deshabilita), la linea que ya esta en pantalla no
 // debe mutar sola: el cajero confirmo ese precio al tocarlo.
 //
-// En esta instancia la cantidad es fija: tocar una linea la pone en 1 y no hay
-// forma de bajarla. Todo lo que este en 1 o mas va al ticket, y como nada
-// guarda cantidades en 0, con las lineas que hay alcanza para el total.
+// Tocar es sumar una unidad. Si la linea ya existe se le incrementa la
+// cantidad en 1 y no se abre una fila nueva: dos toques sobre el mismo producto
+// dan una sola linea con qty 2, no dos lineas con qty 1. Una linea por producto
+// es lo que hace util la tabla, porque el total se lee linea por linea.
+//
+// Al incrementar no se releen name ni price del catalogo, por la misma razon de
+// arriba: el cajero confirmo ese precio la primera vez que toco.
+//
+// La cantidad solo sube. No hay forma de bajarla, asi que un toque de mas se
+// corrige con Cancelar, que tira la operacion entera.
 
 export function addProductToTicket(lines, product) {
-  if (lines.some((line) => line.productId === product.id)) {
-    return lines
+  const index = lines.findIndex((line) => line.productId === product.id)
+
+  if (index === -1) {
+    return [
+      ...lines,
+      {
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        qty: 1,
+      },
+    ]
   }
 
-  return [
-    ...lines,
-    {
-      productId: product.id,
-      name: product.name,
-      price: product.price,
-      qty: 1,
-    },
-  ]
+  return lines.map((line, i) =>
+    i === index ? { ...line, qty: line.qty + 1 } : line,
+  )
+}
+
+// Poner la cuenta a cero de un item es sacarlo del ticket: la linea desaparece
+// y la fila del catalogo vuelve a su estado de "no esta en la cuenta". Es la
+// unica operacion que toca una sola linea, el resto de la cuenta queda como
+// estaba. Por eso el boton va en la fila del catalogo y no en el ticket, que es
+// de solo lectura.
+export function removeProductFromTicket(lines, productId) {
+  return lines.filter((line) => line.productId !== productId)
 }
 
 export function ticketUnits(lines) {
