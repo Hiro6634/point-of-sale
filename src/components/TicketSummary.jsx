@@ -6,38 +6,45 @@ export default function TicketSummary({ lines, total, onClose, onCancel }) {
   const isEmpty = lines.length === 0
 
   return (
-    <section className="ticket" aria-label="Resumen del ticket">
-      <header className="ticket-header">
-        <h2 className="ticket-title">Ticket</h2>
-        <span className="ticket-count">
-          {isEmpty ? 'Vacío' : `${units} ${units === 1 ? 'ítem' : 'ítems'}`}
-        </span>
-      </header>
+    <section className="ticket-section">
+      {/* El recuadro es el documento: encabezado, items con su subtotal y el
+          total en la ultima linea. Los botones quedan afuera del papel porque
+          no son parte de el, son lo que se hace con el. */}
+      <article className="ticket" aria-label="Resumen del ticket">
+        <header className="ticket-header">
+          <h2 className="ticket-title">Ticket</h2>
+          <span className="ticket-count">
+            {isEmpty ? 'Vacío' : `${units} ${units === 1 ? 'ítem' : 'ítems'}`}
+          </span>
+        </header>
 
-      {/* El resumen no se edita: no tiene steppers ni vaciado. Solo mirror de
+        {/* El resumen no se edita: no tiene steppers ni vaciado. Solo mirror de
           lo que se fue tocando, para revisarlo antes de cobrar. */}
-      <div className="ticket-body" aria-live="polite">
-        {isEmpty ? (
-          <p className="ticket-empty">Tocá un producto para sumarlo.</p>
-        ) : (
-          <ul className="ticket-lines">
-            {lines.map((line) => (
-              <li className="ticket-line" key={line.productId}>
-                <span className="ticket-line-name">{line.name}</span>
-                <span className="ticket-line-qty">{line.qty}</span>
-                <span className="ticket-line-amount">
-                  {formatMoney(line.price * line.qty)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+        <div className="ticket-body" aria-live="polite">
+          {isEmpty ? (
+            <p className="ticket-empty">Tocá un producto para sumarlo.</p>
+          ) : (
+            <ul className="ticket-lines">
+              {lines.map((line) => (
+                <li className="ticket-line" key={line.productId}>
+                  <span className="ticket-line-qty">{line.qty}</span>
+                  <span className="ticket-line-name">{line.name}</span>
+                  <span className="ticket-line-amount">
+                    {formatMoney(line.price * line.qty)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
-      <div className="ticket-total">
-        <span>Total</span>
-        <strong>{formatMoney(total)}</strong>
-      </div>
+        {/* Ultima linea del documento, y lo unico que hay que leer antes de
+            cobrar. */}
+        <div className="ticket-total">
+          <span>Total</span>
+          <strong>{formatMoney(total)}</strong>
+        </div>
+      </article>
 
       <div className="ticket-actions">
         <button

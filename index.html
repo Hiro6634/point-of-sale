@@ -11,6 +11,19 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="POS" />
+    <!-- Solo para los numeros de precio. El sw los cachea en la primera carga
+         (cache-first), asi que despues funciona offline; display=swap evita que
+         el texto quede invisible esperando a la fuente.
+         Ojo con wght@300 que es lo que usa el build viejo: aca hace falta
+         400/500/600/700, porque index.css pone font-synthesis: none y con un
+         solo peso el navegador no inventa la negrita, asi que todos los importes
+         en bold saldrian finitos. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:wght@400;500;600;700&display=swap"
+    />
     <title>Punto de Venta</title>
     <script>
       try {
