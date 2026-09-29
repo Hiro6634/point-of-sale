@@ -455,18 +455,18 @@
   padding: 0;
   display: flex;
   flex-direction: column;
+  /* Sin lineas horizontales entre items. Lo que separa un item del otro es el
+     espacio en blanco, no un borde: con 20 lineas el papel se leia como una
+     tabla de rayas y el papel mismo perdia fuerza de comprobante. El gap hace
+     ese trabajo y de paso compacta la lista, que es lo que sirve para una
+     cuenta larga. */
+  gap: 8px;
 }
 
 .ticket-line {
   display: flex;
   align-items: baseline;
   gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-
-  &:last-child {
-    border-bottom: none;
-  }
 }
 
 /* Orden de columnas del papel: Cant, Descripcion, SubTotal. La cantidad abre la
