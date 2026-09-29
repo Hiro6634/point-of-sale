@@ -37,6 +37,15 @@ export function addProductToTicket(lines, product) {
   )
 }
 
+// Poner la cuenta a cero de un item es sacarlo del ticket: la linea desaparece
+// y la fila del catalogo vuelve a su estado de "no esta en la cuenta". Es la
+// unica operacion que toca una sola linea, el resto de la cuenta queda como
+// estaba. Por eso el boton va en la fila del catalogo y no en el ticket, que es
+// de solo lectura.
+export function removeProductFromTicket(lines, productId) {
+  return lines.filter((line) => line.productId !== productId)
+}
+
 export function ticketUnits(lines) {
   return lines.reduce((units, line) => units + line.qty, 0)
 }

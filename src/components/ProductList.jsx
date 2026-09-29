@@ -1,6 +1,19 @@
 import { formatMoney } from '../lib/money.js'
 
-export default function ProductList({ products, quantities, onAddProduct }) {
+function TrashIcon() {
+  return (
+    <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+    </svg>
+  )
+}
+
+export default function ProductList({
+  products,
+  quantities,
+  onAddProduct,
+  onRemoveProduct,
+}) {
   return (
     <table className="product-table">
       <thead>
@@ -9,6 +22,7 @@ export default function ProductList({ products, quantities, onAddProduct }) {
           <th scope="col">Precio</th>
           <th scope="col">Cant</th>
           <th scope="col">S.Total</th>
+          <th scope="col" aria-label="Acciones" />
         </tr>
       </thead>
       <tbody>
@@ -51,6 +65,21 @@ export default function ProductList({ products, quantities, onAddProduct }) {
               <td className="product-qty">{qty > 0 ? qty : ''}</td>
               <td className="product-amount">
                 {qty > 0 ? formatMoney(product.price * qty) : ''}
+              </td>
+              <td className="product-remove-cell">
+                {/* Fuera del boton que estira la fila, en su propia celda: si
+                    compartiera celda el area tactil del alta se comeria el
+                    click. Ver el z-index en .product-remove. */}
+                <button
+                  type="button"
+                  className="product-remove"
+                  onClick={() => onRemoveProduct(product)}
+                  disabled={qty === 0}
+                  aria-label={`Quitar ${product.name} de la cuenta`}
+                  title="Quitar de la cuenta"
+                >
+                  <TrashIcon />
+                </button>
               </td>
             </tr>
           )
