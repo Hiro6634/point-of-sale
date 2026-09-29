@@ -14,5 +14,6 @@ export const CATALOG_CATEGORIES_PATH = `${CATALOG_ROOT}/categories`
 
 export const STORAGE_KEYS = {
   terminalId: 'pos:terminalId',
+  currentUser: 'pos:currentUser',
   theme: 'pos:theme',
 }

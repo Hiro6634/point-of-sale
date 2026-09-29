@@ -5,9 +5,6 @@ import FormInput from './form-input/FormInput.jsx'
 
 const MIN_PASSWORD_LENGTH = 6
 
-// onSignIn es opcional a proposito: el exito ya no navega por callback, lo
-// detecta <LoginRoute> cuando el listener de Firebase cambia la sesion a
-// authenticated. Este formulario solo tiene que distinguir exito de error.
 export default function LoginForm({ onSignIn }) {
   const [credentials, setCredentials] = useState({ email: '', password: '' })
   const [submitting, setSubmitting] = useState(false)
@@ -36,7 +33,7 @@ export default function LoginForm({ onSignIn }) {
     setSubmitting(true)
     try {
       const user = await signInAuthUserWithEmailAndPassword({ email, password })
-      onSignIn?.(user)
+      onSignIn(user)
     } catch (firebaseError) {
       setError(
         AUTH_ERROR_MESSAGES[firebaseError.code] ??
