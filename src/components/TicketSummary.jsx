@@ -1,9 +1,21 @@
 import { formatMoney } from '../lib/money.js'
 import { ticketUnits } from '../lib/ticket.js'
 
-export default function TicketSummary({ lines, total, onClose, onCancel }) {
+// Solo se monta con la cuenta armada: el estado vacio vive en el llamador, que
+// no renderiza nada mientras no haya lineas. Asi el papel nunca aparece en
+// blanco con un "Vacio" al pie de un catalogo recien abierto.
+export default function TicketSummary({
+  lines,
+  total,
+  isClosing,
+  registerSales,
+  onClose,
+  onCancel,
+}) {
   const units = ticketUnits(lines)
-  const isEmpty = lines.length === 0
+  // Durante el envio no se toca nada: un segundo toque cerraria otra cuenta
+  // con la misma lista.
+  const isLocked = isClosing
 
   return (
     <section className="ticket-section">
@@ -13,30 +25,29 @@ export default function TicketSummary({ lines, total, onClose, onCancel }) {
       <article className="ticket" aria-label="Resumen del ticket">
         <header className="ticket-header">
           <h2 className="ticket-title">Ticket</h2>
+          {/* Aviso permanente mientras el modo sin registro esta activo. El toast
+              del cierre lo dice, pero si el cajero no lo lee, lo unico que
+              queda para saber que esas ventas no van a existir es verlo aqui
+              antes de cobrar. */}
+          {!registerSales && <span className="ticket-offline-tag">Sin registrar</span>}
           <span className="ticket-count">
-            {isEmpty ? 'Vacío' : `${units} ${units === 1 ? 'ítem' : 'ítems'}`}
+            {units} {units === 1 ? 'ítem' : 'ítems'}
           </span>
         </header>
 
         {/* El resumen no se edita: no tiene steppers ni vaciado. Solo mirror de
           lo que se fue tocando, para revisarlo antes de cobrar. */}
-        <div className="ticket-body" aria-live="polite">
-          {isEmpty ? (
-            <p className="ticket-empty">Tocá un producto para sumarlo.</p>
-          ) : (
-            <ul className="ticket-lines">
-              {lines.map((line) => (
-                <li className="ticket-line" key={line.productId}>
-                  <span className="ticket-line-qty">{line.qty}</span>
-                  <span className="ticket-line-name">{line.name}</span>
-                  <span className="ticket-line-amount">
-                    {formatMoney(line.price * line.qty)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <ul className="ticket-lines" aria-live="polite">
+          {lines.map((line) => (
+            <li className="ticket-line" key={line.productId}>
+              <span className="ticket-line-qty">{line.qty}</span>
+              <span className="ticket-line-name">{line.name}</span>
+              <span className="ticket-line-amount">
+                {formatMoney(line.price * line.qty)}
+              </span>
+            </li>
+          ))}
+        </ul>
 
         {/* Ultima linea del documento, y lo unico que hay que leer antes de
             cobrar. */}
@@ -51,15 +62,15 @@ export default function TicketSummary({ lines, total, onClose, onCancel }) {
           type="button"
           className="button primary ticket-close-button"
           onClick={onClose}
-          disabled={isEmpty}
+          disabled={isLocked}
         >
-          Cerrar cuenta
+          {isClosing ? 'Registrando…' : 'Cerrar cuenta'}
         </button>
         <button
           type="button"
           className="button secondary ticket-cancel-button"
           onClick={onCancel}
-          disabled={isEmpty}
+          disabled={isLocked}
         >
           Cancelar
         </button>

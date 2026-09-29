@@ -1,6 +1,12 @@
 import { useState } from 'react'
 
-export default function Settings({ terminalId, onSave, onBack }) {
+export default function Settings({
+  terminalId,
+  registerSales,
+  onSave,
+  onRegisterSalesChange,
+  onBack,
+}) {
   const [draft, setDraft] = useState(terminalId)
 
   function handleSubmit(event) {
@@ -37,6 +43,26 @@ export default function Settings({ terminalId, onSave, onBack }) {
           Guardar
         </button>
       </form>
+
+      {/* Sin form y sin boton: el toggle se guarda solo al cambiarlo, que es lo
+          que uno espera de un interruptor. */}
+      <div className="settings-section">
+        <h2>Registro de ventas</h2>
+        <label className="settings-toggle" htmlFor="register-sales">
+          <input
+            id="register-sales"
+            type="checkbox"
+            checked={registerSales}
+            onChange={(event) => onRegisterSalesChange(event.target.checked)}
+          />
+          <span>Registrar ventas en Firestore</span>
+        </label>
+        <p className="hint">
+          Apagado, la cuenta se cierra igual y el ticket queda vacío, pero no se
+          guarda nada en Firestore. Para vender sin conexión o cuando la base no
+          responde.
+        </p>
+      </div>
 
       <footer className="settings-footer">Versión {__APP_VERSION__}</footer>
     </section>
