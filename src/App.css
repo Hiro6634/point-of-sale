@@ -47,18 +47,6 @@
   gap: 12px;
 }
 
-.terminal-chip {
-  display: inline-flex;
-  align-items: center;
-  font-family: var(--mono);
-  font-size: 14px;
-  color: var(--text-h);
-  background: var(--accent-bg);
-  border: 1px solid var(--accent-border);
-  border-radius: 999px;
-  padding: 4px 12px;
-}
-
 .icon {
   width: 20px;
   height: 20px;
@@ -132,6 +120,14 @@
    Lista con columnas, como en epic/POS-3-catalogo. Sin titulo de categoria: el
    color de fondo de la fila es el unico indicio de a que categoria pertenece,
    y como las de una misma categoria salen pegadas se leen igual como un bloque. */
+
+/* Mientras el cierre se esta guardando el catalogo no acepta toques. El
+   atenuado avisa que esta ocupado; el pointer-events es lo que evita de verdad
+   sumar o sacar un producto en los ~300ms de la escritura. */
+.product-table--locked {
+  opacity: 0.55;
+  pointer-events: none;
+}
 
 .catalog {
   border: 1px solid var(--border);
@@ -438,17 +434,10 @@
   color: var(--text);
 }
 
-/* Ojo: .ticket-body no lleva max-height ni overflow a proposito. Si el resumen
-   scrolleara por su cuenta quedaria un scroll anidado dentro del scroll de la
-   pagina, y el gesto de bajar para leer la cuenta terminaria moviendo el
+/* Ojo: la lista de lineas no lleva max-height ni overflow a proposito. Si el
+   resumen scrolleara por su cuenta quedaria un scroll anidado dentro del scroll
+   de la pagina, y el gesto de bajar para leer la cuenta terminaria moviendo el
    listado de productos. El ticket crece y es la pagina la que baja. */
-
-.ticket-empty {
-  padding: 4px 0;
-  color: var(--text);
-  font-size: 15px;
-}
-
 .ticket-lines {
   list-style: none;
   margin: 0;
@@ -544,6 +533,68 @@
   color: var(--danger);
   background: var(--danger-bg);
   border-color: var(--danger-border);
+}
+
+/* Overlay del dialogo de confirmacion. Va por encima del toast (z-index 20)
+   porque el toast de "venta registrada" no puede quedar asomando arriba de un
+   dialogo que pide decidir sobre la cuenta. */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.confirm {
+  width: 100%;
+  max-width: 380px;
+  padding: 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.confirm-title {
+  margin: 0 0 6px;
+  font-size: 19px;
+  line-height: 1.25;
+  color: var(--text-h);
+}
+
+.confirm-description {
+  margin: 0 0 20px;
+  font-size: 15px;
+  color: var(--text);
+}
+
+/* Volver a la izquierda y confirmar a la derecha: la accion destructiva nunca
+   es la que queda bajo el dedo del cajero por defecto. */
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.confirm-cancel {
+  min-height: 46px;
+  font-size: 15px;
+}
+
+.confirm-confirm {
+  min-height: 46px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.confirm-confirm--danger {
+  background: var(--danger);
+  border-color: var(--danger);
 }
 
 
@@ -719,69 +770,140 @@
   color: var(--text);
 }
 
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background: rgba(0, 0, 0, 0.45);
-}
+/* ---- Ajustes: seccion de ventas ---- */
 
-.modal {
-  background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 24px;
-  max-width: 520px;
-  width: 100%;
-  max-height: 90svh;
-  overflow: auto;
-  box-sizing: border-box;
-  text-align: left;
-
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin-bottom: 16px;
-  }
+.settings-section {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
 
   h2 {
-    margin: 0;
-  }
-
-  footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 20px;
+    margin: 0 0 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-h);
   }
 }
 
-.payload {
-  font-family: var(--mono);
-  font-size: 13px;
-  line-height: 150%;
-  background: var(--code-bg);
+.settings-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
   color: var(--text-h);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 14px;
-  margin: 0;
-  overflow: auto;
-  text-align: left;
+  cursor: pointer;
+
+  input {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
 }
 
-.status-success {
-  margin: 12px 0 0;
-  color: var(--accent);
+/* Etiqueta del ticket mientras no se estan registrando las ventas. Va con el
+   color de alarma y no con uno neutro: si el cajero vende sin registro sin
+   darse cuenta, el aviso tiene que verse igual que un error. */
+.ticket-offline-tag {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: var(--danger);
+  font-size: 12px;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+
+/* ---- Avisos (toast) ---- */
+
+/* Fijo arriba de todo, no en el flujo: el resultado del cierre importa al
+   instante y no puede quedar escondido detras del catalogo. Toca todo el ancho
+   en movil porque es un aviso de una linea y no hay ancho para recortarlo. */
+.toast {
+  position: fixed;
+  top: calc(16px + env(safe-area-inset-top));
+  left: 50%;
+  z-index: 20;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: min(520px, calc(100vw - 32px));
+  box-sizing: border-box;
+  padding: 14px 14px 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--toast-border);
+  background: var(--toast-bg);
+  color: var(--toast-fg);
+  box-shadow: var(--shadow);
+  text-align: left;
+
+  strong {
+    display: block;
+    font-weight: 600;
+  }
+}
+
+.toast--success {
+  --toast-fg: var(--success);
+  --toast-bg: var(--success-bg);
+  --toast-border: var(--success-border);
+}
+
+.toast--error {
+  --toast-fg: var(--danger);
+  --toast-bg: var(--danger-bg);
+  --toast-border: var(--danger-border);
+}
+
+.toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-message {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--toast-fg);
+}
+
+/* El detalle va en tono normal, no en el color de alarma: es contexto, y si
+   gritara con el mismo rojo competiria con el mensaje principal. */
+.toast-detail {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.toast-dismiss {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--toast-fg);
+  cursor: pointer;
+  opacity: 0.7;
+
+  .icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+
+  &:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.06);
+  }
 }
 
 /* ---- Login (look netlify-deploy) ---- */

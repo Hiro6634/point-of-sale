@@ -1,16 +1,18 @@
-﻿import { useEffect, useState } from 'react'
+﻿import { useCallback, useEffect, useRef, useState } from 'react'
 import CatalogState from './components/CatalogState.jsx'
-import CloseAccount from './components/CloseAccount.jsx'
 import LoginForm from './components/LoginForm.jsx'
 import ProductList from './components/ProductList.jsx'
 import Settings from './components/Settings.jsx'
 import ThemeToggle from './components/ThemeToggle.jsx'
 import TicketSummary from './components/TicketSummary.jsx'
+import Toast from './components/Toast.jsx'
 import { DEFAULT_TERMINAL_ID, STORAGE_KEYS } from './config.js'
 import {
   signOutAuthUser,
   subscribeToAuthStateChange,
 } from './firebase/firebase.utils.js'
+import { saveClosedTicket, WRITE_ERRORS } from './firebase/tickets.js'
+import { decrementStock } from './firebase/stock.js'
 import {
   CATALOG_STATUS,
   useCatalogSubscription,
@@ -18,8 +20,16 @@ import {
 import { useLocalStorage } from './hooks/useLocalStorage.js'
 import { useTheme } from './hooks/useTheme.js'
 import { buildClosePayload } from './lib/closing.js'
+import {
+  CLOSING_ERROR_FALLBACK,
+  CLOSING_ERROR_MESSAGES,
+  CLOSING_ERROR_OFFLINE,
+  CLOSING_ERROR_UNCONFIRMED,
+} from './lib/closing-errors.js'
 import { listProductsByCategory } from './lib/catalog-list.js'
 import { addProductToTicket, removeProductFromTicket, ticketTotal } from './lib/ticket.js'
+import { createTicketId } from './lib/ticket-id.js'
+import { TOAST_TONE } from './lib/toast.js'
 import viteLogo from './assets/vite.svg'
 import './App.css'
 
@@ -41,11 +51,26 @@ function App() {
     STORAGE_KEYS.terminalId,
     DEFAULT_TERMINAL_ID,
   )
-  const [closingPayload, setClosingPayload] = useState(null)
   const [currentUser, setCurrentUser] = useLocalStorage(
     STORAGE_KEYS.currentUser,
     null,
   )
+  // Por defecto se registran las ventas. El modo sin envio es una decision
+  // consciente del cajero, no el estado inicial: una caja que arranca sin
+  // querer en modo sin registro venderia sin dejar rastro.
+  const [registerSales, setRegisterSales] = useLocalStorage(
+    STORAGE_KEYS.registerSales,
+    true,
+  )
+  const [isClosing, setIsClosing] = useState(false)
+  // Id de la venta en curso: desde el primer intento de cierre hasta que la
+  // venta termina, sobreviviendo a los reintentos. Es lo que hace que un
+  // reintento pise el documento anterior en vez de crear una segunda venta
+  // cargada. Va en un ref y no en estado porque no hay que renderizarlo: se lee
+  // y se escribe solo desde los manejadores, y ponerlo en estado obligaria a un
+  // efecto para limpiarlo, que es justo lo que dispara un render en cascada.
+  const saleTicketId = useRef(null)
+  const [toast, setToast] = useState(null)
 
   const { status, errorMessage, categories, retry } = useCatalogSubscription({
     enabled: Boolean(currentUser),
@@ -62,6 +87,21 @@ function App() {
   const total = ticketTotal(ticket)
   const isCatalogReady = status === CATALOG_STATUS.READY
 
+  // El id hace que dos avisos seguidos con el mismo texto se rendericen como
+  // dos toasts distintos y el de exito reinicie su cuenta regresiva.
+  const showToast = useCallback((tone, message, detail) => {
+    setToast({ id: Date.now(), tone, message, detail })
+  }, [])
+
+  const dismissToast = useCallback(() => setToast(null), [])
+
+  // Cierra la venta en curso: vacia el ticket y descarta el id, para que la
+  // proxima cuenta arranque con un timestamp propio y no herede el anterior.
+  const endSale = useCallback(() => {
+    setTicket([])
+    saleTicketId.current = null
+  }, [])
+
   useEffect(() => {
     return subscribeToAuthStateChange((user) => {
       setCurrentUser(user ? user.email : null)
@@ -77,21 +117,88 @@ function App() {
   // que se recalcula solo con la linea afuera, sin ningun estado que sincronizar.
   function handleRemoveProduct(product) {
     setTicket((current) => removeProductFromTicket(current, product.id))
+    // Si este toque se lleva la ultima linea, la venta termino sin cerrarse y su
+    // id tiene que morir con ella. Se decide con la foto del evento y no desde el
+    // updater, que tiene que ser puro. Si la foto fuera vieja la condicion
+    // simplemente no da y no pasa nada.
+    if (ticket.length === 1 && ticket[0]?.productId === product.id) {
+      saleTicketId.current = null
+    }
   }
 
-  function handleCloseAccount() {
-    setClosingPayload(buildClosePayload({ terminalId, items: ticket, total }))
+  // Cierra la cuenta y la registra en el acto: sin modal de confirmacion, un
+  // toque y sale. El ticket se vacia recien cuando la escritura llego, no antes.
+  async function handleCloseAccount() {
+    if (isClosing) return
+
+    // El primer intento fija el id de la venta; los siguientes reutilizan el
+    // mismo, asi que reintentar no duplica. closedAt si se recalcula en cada
+    // intento: es la hora en que la venta quedo efectivamente guardada, que es
+    // lo que dice el campo.
+    if (!saleTicketId.current) saleTicketId.current = createTicketId(new Date())
+    const payload = buildClosePayload({
+      terminalId,
+      ticketId: saleTicketId.current,
+      items: ticket,
+      total,
+    })
+
+    // Modo sin envio: la cuenta se cierra igual, pero no queda registro. El
+    // aviso NO dice "registrada" porque no lo esta, y el cajero tiene que
+    // saber que esa venta no existe para nadie.
+    if (!registerSales) {
+      endSale()
+      showToast(TOAST_TONE.SUCCESS, 'Ticket cerrado sin registrar.')
+      return
+    }
+
+    setIsClosing(true)
+    try {
+      await saveClosedTicket(payload)
+      // Cero literal. Es seguro porque durante el envio el catalogo esta
+      // bloqueado: no se puede sumar ni sacar nada, asi que lo que hay en
+      // pantalla es exactamente lo que se mando y no hay item que perder.
+      endSale()
+      showToast(TOAST_TONE.SUCCESS, 'Venta registrada.')
+      // El stock se descuenta aparte y sin esperar. La venta ya quedo guardada y
+      // el cajero tiene que poder seguir con el siguiente cliente: si el
+      // descuento falla, la venta existe igual y el stock se corrige con un
+      // conteo, que no es lo mismo que perder una venta cobrada.
+      decrementStock(payload.items).catch((error) => {
+        console.error('Error descontando el stock de la venta', error)
+      })
+    } catch (error) {
+      console.error('Error registrando la venta', error)
+      // El ticket NO se toca. Queda abierto para reintentar con "Cerrar cuenta"
+      // o descartar con "Cancelar", sin tener que armar la cuenta de nuevo.
+      //
+      // Sin conexion declarada se corta antes de escribir, asi que no hay nada
+      // encolado y el reintento es limpio. El timeout es distinto: la escritura
+      // pudo quedar encolada y aparecer mas tarde, asi que el aviso de venta no
+      // confirmada sigue siendo obligatorio.
+      if (error?.code === WRITE_ERRORS.OFFLINE) {
+        showToast(TOAST_TONE.ERROR, CLOSING_ERROR_OFFLINE)
+      } else {
+        showToast(
+          TOAST_TONE.ERROR,
+          CLOSING_ERROR_MESSAGES[error?.code] ?? CLOSING_ERROR_FALLBACK,
+          CLOSING_ERROR_UNCONFIRMED,
+        )
+      }
+    } finally {
+      setIsClosing(false)
+    }
   }
 
   // Abandona la operacion entera. No hay forma de sacar un solo producto: la
   // unica salida de una cuenta es cobrarla o tirar todo.
+  //
+  // La confirmacion vive en TicketSummary, no aca. Asi el dialogo se desmonta
+  // solo cuando endSale vacia el ticket y App deja de renderizar el resumen, en
+  // vez de depender de un useEffect que lo cierre cuando el estado ya cambio.
   function handleCancel() {
-    setTicket([])
-  }
-
-  function handleClosingDone() {
-    setClosingPayload(null)
-    setTicket([])
+    endSale()
+    dismissToast()
   }
 
   function handleSignIn(userOrEmail) {
@@ -119,10 +226,12 @@ function App() {
     return (
       <Settings
         terminalId={terminalId}
+        registerSales={registerSales}
         onSave={(id) => {
           setTerminalId(id)
           setView('pos')
         }}
+        onRegisterSalesChange={setRegisterSales}
         onBack={() => setView('pos')}
       />
     )
@@ -138,9 +247,6 @@ function App() {
           title="Punto de Venta"
         />
         <div className="topbar-actions">
-          <span className="terminal-chip" title="Terminal activo">
-            Terminal: {terminalId}
-          </span>
           <button
             type="button"
             className="button secondary"
@@ -167,6 +273,7 @@ function App() {
             <ProductList
               products={catalogProducts}
               quantities={quantities}
+              isLocked={isClosing}
               onAddProduct={handleAddProduct}
               onRemoveProduct={handleRemoveProduct}
             />
@@ -181,21 +288,33 @@ function App() {
           />
         </div>
 
-        {/* Va al final del listado y no esta anclado a proposito: el cajero
-            baja hasta el final para revisar la cuenta antes de cobrar. */}
-        <TicketSummary
-          lines={ticket}
-          total={total}
-          onClose={handleCloseAccount}
-          onCancel={handleCancel}
-        />
+        {/* Solo aparece con la cuenta armada. Mientras esta vacio no hay nada
+            que revisar ni cobrar, asi que el bloque entero se va y el catalogo
+            ocupa el lugar. Va al final del listado y no esta anclado a
+            proposito: el cajero baja hasta el final para revisar la cuenta
+            antes de cobrar. */}
+        {ticket.length > 0 && (
+          <TicketSummary
+            lines={ticket}
+            total={total}
+            isClosing={isClosing}
+            registerSales={registerSales}
+            onClose={handleCloseAccount}
+            onCancel={handleCancel}
+          />
+        )}
       </main>
 
-      {closingPayload && (
-        <CloseAccount
-          payload={closingPayload}
-          onCancel={() => setClosingPayload(null)}
-          onClosed={handleClosingDone}
+      {/* El aviso va suelto, arriba del todo y por encima de todo, porque el
+          resultado del cierre importa al instante y no puede quedar escondido
+          detras del catalogo. */}
+      {toast && (
+        <Toast
+          key={toast.id}
+          tone={toast.tone}
+          message={toast.message}
+          detail={toast.detail}
+          onDismiss={dismissToast}
         />
       )}
     </section>
