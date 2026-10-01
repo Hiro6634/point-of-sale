@@ -192,6 +192,10 @@ function App() {
 
   // Abandona la operacion entera. No hay forma de sacar un solo producto: la
   // unica salida de una cuenta es cobrarla o tirar todo.
+  //
+  // La confirmacion vive en TicketSummary, no aca. Asi el dialogo se desmonta
+  // solo cuando endSale vacia el ticket y App deja de renderizar el resumen, en
+  // vez de depender de un useEffect que lo cierre cuando el estado ya cambio.
   function handleCancel() {
     endSale()
     dismissToast()

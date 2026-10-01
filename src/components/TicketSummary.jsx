@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import ConfirmDialog from './ConfirmDialog.jsx'
 import { formatMoney } from '../lib/money.js'
 import { ticketUnits } from '../lib/ticket.js'
 
@@ -16,6 +18,10 @@ export default function TicketSummary({
   // Durante el envio no se toca nada: un segundo toque cerraria otra cuenta
   // con la misma lista.
   const isLocked = isClosing
+  // Cancelar tira toda la cuenta y no tiene vuelta atras, asi que pasa por un
+  // dialogo. Cerrar cuenta no lo pide porque el cobro es la accion que el
+  // cajero quiere hacer y equivocarse con ella sale de la pantalla igual.
+  const [isConfirmingCancel, setIsConfirmingCancel] = useState(false)
 
   return (
     <section className="ticket-section">
@@ -69,12 +75,28 @@ export default function TicketSummary({
         <button
           type="button"
           className="button secondary ticket-cancel-button"
-          onClick={onCancel}
+          onClick={() => setIsConfirmingCancel(true)}
           disabled={isLocked}
         >
           Cancelar
         </button>
       </div>
+
+      {/* El dialogo va adentro de TicketSummary y no en App a proposito: el
+          ticket se monta solo mientras hay lineas, asi que al cancelar y vaciarse
+          el estado el dialogo se desmonta solo, sin estado que sincronizar. */}
+      {isConfirmingCancel && (
+        <ConfirmDialog
+          title="¿Cancelar la cuenta?"
+          description={`Se van a descartar ${
+            units === 1 ? '1 ítem' : `${units} ítems`
+          } por ${formatMoney(total)}. La cuenta no queda registrada.`}
+          confirmLabel="Sí, cancelar"
+          cancelLabel="Volver"
+          onConfirm={onCancel}
+          onCancel={() => setIsConfirmingCancel(false)}
+        />
+      )}
     </section>
   )
 }
