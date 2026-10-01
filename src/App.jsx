@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useState } from 'react'
+﻿import { useCallback, useEffect, useRef, useState } from 'react'
 import CatalogState from './components/CatalogState.jsx'
 import LoginForm from './components/LoginForm.jsx'
 import ProductList from './components/ProductList.jsx'
@@ -12,6 +12,7 @@ import {
   subscribeToAuthStateChange,
 } from './firebase/firebase.utils.js'
 import { saveClosedTicket, WRITE_ERRORS } from './firebase/tickets.js'
+import { decrementStock } from './firebase/stock.js'
 import {
   CATALOG_STATUS,
   useCatalogSubscription,
@@ -27,6 +28,7 @@ import {
 } from './lib/closing-errors.js'
 import { listProductsByCategory } from './lib/catalog-list.js'
 import { addProductToTicket, removeProductFromTicket, ticketTotal } from './lib/ticket.js'
+import { createTicketId } from './lib/ticket-id.js'
 import { TOAST_TONE } from './lib/toast.js'
 import viteLogo from './assets/vite.svg'
 import './App.css'
@@ -61,6 +63,13 @@ function App() {
     true,
   )
   const [isClosing, setIsClosing] = useState(false)
+  // Id de la venta en curso: desde el primer intento de cierre hasta que la
+  // venta termina, sobreviviendo a los reintentos. Es lo que hace que un
+  // reintento pise el documento anterior en vez de crear una segunda venta
+  // cargada. Va en un ref y no en estado porque no hay que renderizarlo: se lee
+  // y se escribe solo desde los manejadores, y ponerlo en estado obligaria a un
+  // efecto para limpiarlo, que es justo lo que dispara un render en cascada.
+  const saleTicketId = useRef(null)
   const [toast, setToast] = useState(null)
 
   const { status, errorMessage, categories, retry } = useCatalogSubscription({
@@ -86,6 +95,13 @@ function App() {
 
   const dismissToast = useCallback(() => setToast(null), [])
 
+  // Cierra la venta en curso: vacia el ticket y descarta el id, para que la
+  // proxima cuenta arranque con un timestamp propio y no herede el anterior.
+  const endSale = useCallback(() => {
+    setTicket([])
+    saleTicketId.current = null
+  }, [])
+
   useEffect(() => {
     return subscribeToAuthStateChange((user) => {
       setCurrentUser(user ? user.email : null)
@@ -101,6 +117,13 @@ function App() {
   // que se recalcula solo con la linea afuera, sin ningun estado que sincronizar.
   function handleRemoveProduct(product) {
     setTicket((current) => removeProductFromTicket(current, product.id))
+    // Si este toque se lleva la ultima linea, la venta termino sin cerrarse y su
+    // id tiene que morir con ella. Se decide con la foto del evento y no desde el
+    // updater, que tiene que ser puro. Si la foto fuera vieja la condicion
+    // simplemente no da y no pasa nada.
+    if (ticket.length === 1 && ticket[0]?.productId === product.id) {
+      saleTicketId.current = null
+    }
   }
 
   // Cierra la cuenta y la registra en el acto: sin modal de confirmacion, un
@@ -108,26 +131,42 @@ function App() {
   async function handleCloseAccount() {
     if (isClosing) return
 
-    const payload = buildClosePayload({ terminalId, items: ticket, total })
+    // El primer intento fija el id de la venta; los siguientes reutilizan el
+    // mismo, asi que reintentar no duplica. closedAt si se recalcula en cada
+    // intento: es la hora en que la venta quedo efectivamente guardada, que es
+    // lo que dice el campo.
+    if (!saleTicketId.current) saleTicketId.current = createTicketId(new Date())
+    const payload = buildClosePayload({
+      terminalId,
+      ticketId: saleTicketId.current,
+      items: ticket,
+      total,
+    })
 
     // Modo sin envio: la cuenta se cierra igual, pero no queda registro. El
     // aviso NO dice "registrada" porque no lo esta, y el cajero tiene que
     // saber que esa venta no existe para nadie.
     if (!registerSales) {
-      setTicket([])
+      endSale()
       showToast(TOAST_TONE.SUCCESS, 'Ticket cerrado sin registrar.')
       return
     }
 
-    const sentIds = new Set(ticket.map((line) => line.productId))
     setIsClosing(true)
     try {
       await saveClosedTicket(payload)
-      // Se saca del ticket solo lo que se mando, no todo el ticket. Si el
-      // cajero toco un producto mientras escribia, ese se queda: limpiar todo
-      // a posteriori le borraria un item de la cara.
-      setTicket((current) => current.filter((line) => !sentIds.has(line.productId)))
+      // Cero literal. Es seguro porque durante el envio el catalogo esta
+      // bloqueado: no se puede sumar ni sacar nada, asi que lo que hay en
+      // pantalla es exactamente lo que se mando y no hay item que perder.
+      endSale()
       showToast(TOAST_TONE.SUCCESS, 'Venta registrada.')
+      // El stock se descuenta aparte y sin esperar. La venta ya quedo guardada y
+      // el cajero tiene que poder seguir con el siguiente cliente: si el
+      // descuento falla, la venta existe igual y el stock se corrige con un
+      // conteo, que no es lo mismo que perder una venta cobrada.
+      decrementStock(payload.items).catch((error) => {
+        console.error('Error descontando el stock de la venta', error)
+      })
     } catch (error) {
       console.error('Error registrando la venta', error)
       // El ticket NO se toca. Queda abierto para reintentar con "Cerrar cuenta"
@@ -154,7 +193,7 @@ function App() {
   // Abandona la operacion entera. No hay forma de sacar un solo producto: la
   // unica salida de una cuenta es cobrarla o tirar todo.
   function handleCancel() {
-    setTicket([])
+    endSale()
     dismissToast()
   }
 
@@ -230,6 +269,7 @@ function App() {
             <ProductList
               products={catalogProducts}
               quantities={quantities}
+              isLocked={isClosing}
               onAddProduct={handleAddProduct}
               onRemoveProduct={handleRemoveProduct}
             />

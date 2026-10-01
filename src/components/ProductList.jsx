@@ -11,11 +11,18 @@ function TrashIcon() {
 export default function ProductList({
   products,
   quantities,
+  isLocked,
   onAddProduct,
   onRemoveProduct,
 }) {
   return (
-    <table className="product-table">
+    // Durante el envio de un cierre el catalogo queda inerte. No es solo estetico:
+    // es lo que permite que el ticket vuelva a cero sin perder un item, porque
+    // mientras se guarda no se puede sumar ni sacar nada.
+    <table
+      className={`product-table${isLocked ? ' product-table--locked' : ''}`}
+      aria-busy={isLocked || undefined}
+    >
       <thead>
         <tr>
           <th scope="col">Descripción</th>
@@ -45,6 +52,7 @@ export default function ProductList({
                   type="button"
                   className="product-add"
                   onClick={() => onAddProduct(product)}
+                  disabled={isLocked}
                   aria-label={
                     qty > 0
                       ? `Sumar una unidad de ${product.name} al ticket. Ya hay ${qty} en el ticket`
@@ -74,7 +82,7 @@ export default function ProductList({
                   type="button"
                   className="product-remove"
                   onClick={() => onRemoveProduct(product)}
-                  disabled={qty === 0}
+                  disabled={qty === 0 || isLocked}
                   aria-label={`Quitar ${product.name} de la cuenta`}
                   title="Quitar de la cuenta"
                 >

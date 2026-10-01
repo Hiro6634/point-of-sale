@@ -4,8 +4,14 @@
 // derivarlo al leer es a proposito: si mañana se toca la regla de una venta, los
 // tickets viejos tienen que seguir mostrando lo que se cobro ese dia.
 
-export function buildClosePayload({ terminalId, items, total }) {
+// El ticketId lo genera y lo reutiliza quien cierra, no esta funcion. Va en el
+// payload y no se deriva de closedAt para que el reintento de una venta que
+// fallo por red escriba sobre el MISMO documento: si el id se volviera a generar,
+// un timeout seguido de un reintento dejaria dos ventas cargadas por la misma
+// cuenta.
+export function buildClosePayload({ terminalId, items, total, ticketId }) {
   return {
+    ticketId,
     terminalId,
     closedAt: new Date().toISOString(),
     items,

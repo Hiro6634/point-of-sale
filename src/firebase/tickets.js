@@ -36,11 +36,10 @@ export function saveClosedTicket(payload) {
     )
   }
 
-  // El id sale del closedAt del propio payload y no de un new Date() suelto, para
-  // que el numero de ticket y el campo closedAt cuenten el mismo instante. Si
-  // se generaran por separado, un id y una fecha pueden discrepar por un
-  // segundo y la trazabilidad deja de servir.
-  const ticketId = createTicketId(new Date(payload.closedAt))
+  // El id lo trae el payload, no se deriva del reloj: el reintento de una venta
+  // que fallo por red tiene que escribir sobre el mismo documento y no crear una
+  // venta nueva. El fallback es para cuando el payload venga sin id.
+  const ticketId = payload.ticketId || createTicketId(new Date(payload.closedAt))
 
   // setDoc con id propio y no addDoc, que genera ids automaticos opacos.
   const ref = doc(ticketsCollection, ticketId)
