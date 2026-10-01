@@ -16,7 +16,12 @@ export function subscribeToCatalogProducts({ onProducts, onError }) {
         const data = doc.data()
         return {
           id: doc.id,
-          name: data.name,
+          // Firestore guarda el nombre en minusculas, que es la forma canonica
+          // para consultar, ordenar y deduplicar. Las mayusculas son una
+          // decision de presentacion y se aplican aca, en el borde, y no en cada
+          // componente: asi el ticket, que congela el nombre al tocar el
+          // producto, muestra exactamente lo mismo que el catalogo.
+          name: String(data.name ?? '').toUpperCase(),
           // El producto no guarda el id del documento de la categoria sino su
           // nombre, asi que el campo se llama category y no categoryId. El
           // categoryId queda como alternativa por si el dato migra a referencia.
