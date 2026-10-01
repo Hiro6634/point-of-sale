@@ -121,6 +121,14 @@
    color de fondo de la fila es el unico indicio de a que categoria pertenece,
    y como las de una misma categoria salen pegadas se leen igual como un bloque. */
 
+/* Mientras el cierre se esta guardando el catalogo no acepta toques. El
+   atenuado avisa que esta ocupado; el pointer-events es lo que evita de verdad
+   sumar o sacar un producto en los ~300ms de la escritura. */
+.product-table--locked {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
 .catalog {
   border: 1px solid var(--border);
   border-radius: 12px;
