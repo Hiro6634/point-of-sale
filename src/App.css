@@ -535,6 +535,68 @@
   border-color: var(--danger-border);
 }
 
+/* Overlay del dialogo de confirmacion. Va por encima del toast (z-index 20)
+   porque el toast de "venta registrada" no puede quedar asomando arriba de un
+   dialogo que pide decidir sobre la cuenta. */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.confirm {
+  width: 100%;
+  max-width: 380px;
+  padding: 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.confirm-title {
+  margin: 0 0 6px;
+  font-size: 19px;
+  line-height: 1.25;
+  color: var(--text-h);
+}
+
+.confirm-description {
+  margin: 0 0 20px;
+  font-size: 15px;
+  color: var(--text);
+}
+
+/* Volver a la izquierda y confirmar a la derecha: la accion destructiva nunca
+   es la que queda bajo el dedo del cajero por defecto. */
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.confirm-cancel {
+  min-height: 46px;
+  font-size: 15px;
+}
+
+.confirm-confirm {
+  min-height: 46px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.confirm-confirm--danger {
+  background: var(--danger);
+  border-color: var(--danger);
+}
+
 
 @media (max-width: 640px) {
   .pos-app {
