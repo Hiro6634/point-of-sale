@@ -1,5 +1,8 @@
-const CACHE = 'pos-pwa-v2'
-const PRECACHE = ['/', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png']
+// v3 por el cambio de iconos. Sin bumpear la version, el service worker instalado
+// sigue sirviendo los iconos viejos desde su cache (el fetch es cache-first) y la
+// app instalada queda con el icono anterior para siempre.
+const CACHE = 'pos-pwa-v3'
+const PRECACHE = ['/', '/manifest.webmanifest', '/icons/ajb-192.png', '/icons/ajb-512.png']
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
