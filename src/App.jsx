@@ -30,7 +30,7 @@ import { listProductsByCategory } from './lib/catalog-list.js'
 import { addProductToTicket, removeProductFromTicket, ticketTotal } from './lib/ticket.js'
 import { createTicketId } from './lib/ticket-id.js'
 import { TOAST_TONE } from './lib/toast.js'
-import viteLogo from './assets/vite.svg'
+import logoApp from './assets/ajb.png'
 import './App.css'
 
 function GearIcon() {
@@ -242,7 +242,7 @@ function App() {
       <header className="topbar">
         <img
           className="topbar-logo"
-          src={viteLogo}
+          src={logoApp}
           alt="Punto de Venta"
           title="Punto de Venta"
         />
